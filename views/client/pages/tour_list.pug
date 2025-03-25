@@ -2,3 +2,8 @@ extends ../layouts/default.pug
 
 block main
   h1 Trang tour
+
+  ul
+    each item in tourList
+      li #{item.name} (Phương tiện: #{item.vehicle}) 
+    

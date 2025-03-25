@@ -6,8 +6,9 @@ require("dotenv").config();
 
 mongoose.connect(process.env.DATABASE);
 
+const { homeController } = require("./controllers/client/home.controller");
+const tourController = require("./controllers/client/tour.controller");
 const PORT = process.env.PORT || 3000;
-const Tour = require("./models/tour.model");
 
 // Thiết lập thư mục chứa file tĩnh của Fontend:
 app.use(express.static(path.join(__dirname, "public")));
@@ -17,21 +18,11 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // route + controller
-app.get("/", (req, res) => {
-	res.render("client/pages/home", {
-		pageTitle: "Trang chủ",
-	});
-});
+app.get("/", homeController);
 
-app.get("/tours", async (req, res) => {
-	const tourList = await Tour.find({});
-
-	console.log(tourList);
-	res.render("client/pages/tour_list", {
-		pageTitle: "Danh sách tour",
-		tourList: tourList,
-	});
-});
+app.get("/tours", tourController.list);
+app.get("/tours/del", tourController.del);
+app.get("/tours/create", tourController.create);
 
 app.listen(PORT, () => {
 	console.log(`Website is running at ${PORT}`);

@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-mongoose.connect(
-	"mongodb+srv://wangnguenlc79:Q12345%40%40@backend.ftdam.mongodb.net/tour_project_1",
-);
+require("dotenv").config();
+
+mongoose.connect(process.env.DATABASE);
 
 const Tour = mongoose.model("Tour", { name: String, vehicle: String });
 
@@ -12,7 +12,7 @@ const Tour = mongoose.model("Tour", { name: String, vehicle: String });
 // users = User
 // products => Product
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Thiết lập thư mục chứa file tĩnh của Fontend:
 app.use(express.static(path.join(__dirname, "public")));

@@ -6,13 +6,8 @@ require("dotenv").config();
 
 mongoose.connect(process.env.DATABASE);
 
-const Tour = mongoose.model("Tour", { name: String, vehicle: String });
-
-// tours => Tour
-// users = User
-// products => Product
-
 const PORT = process.env.PORT || 3000;
+const Tour = require("./models/tour.model");
 
 // Thiết lập thư mục chứa file tĩnh của Fontend:
 app.use(express.static(path.join(__dirname, "public")));

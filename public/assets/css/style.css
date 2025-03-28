@@ -273,7 +273,7 @@ textarea {
 		background-color: #00000082;
 		position: absolute;
 		top: 0;
-		left: 0;
+		left: -15px;
 	}
 
 	.header .inner-menu > ul > li.active > i::before {

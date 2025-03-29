@@ -1,4 +1,30 @@
 extends ../layouts/default.pug
+include ../mixins/box_breadcrumb.pug
 
 block main
-  h1 Chi tiết tour
+  -
+    var breadcrumb = {
+      image: "/assets/images/banner-7.jpg",
+      title: "Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5D",
+      list: [
+        {
+          link: "/",
+          title: "Trang chủ"
+        },
+        {
+          link: "/tours",
+          title: "Tour Miền Bắc"
+        },
+        {
+          link: "/tours",
+          title: "Tour Trong Nước"
+        },
+        {
+          link: "/tours/detail",
+          title: "Tour Hà Nội - Ninh Bình - Hạ Long - Yên Tử - Sapa | 6N5D"
+        }
+      ]
+    };
+  // Breadcrumb
+  +box_breadcrumb(breadcrumb)
+  // End Breadcrumb

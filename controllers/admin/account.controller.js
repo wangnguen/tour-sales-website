@@ -3,4 +3,10 @@ const login = (req, res) => {
 		titlePage: "Đăng nhập",
 	});
 };
-module.exports = { login };
+
+const register = (req, res) => {
+	res.render("admin/pages/register", {
+		titlePage: "Đăng kí",
+	});
+};
+module.exports = { login, register };

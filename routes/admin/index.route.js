@@ -20,4 +20,10 @@ router.use("/contact", contactRoutes);
 router.use("/setting", settingRoutes);
 router.use("/profile", profileRoutes);
 
+router.get("*", (req, res) => {
+	res.render("admin/pages/error_404.pug", {
+		titlePage: "404 Not Found",
+	});
+});
+
 module.exports = router;

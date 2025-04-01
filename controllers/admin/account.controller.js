@@ -9,4 +9,10 @@ const register = (req, res) => {
 		titlePage: "Đăng kí",
 	});
 };
-module.exports = { login, register };
+const forgotPassword = (req, res) => {
+	res.render("admin/pages/forgot_password", {
+		titlePage: "Quên mật khẩu",
+	});
+};
+
+module.exports = { login, register, forgotPassword };

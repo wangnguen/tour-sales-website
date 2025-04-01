@@ -6,6 +6,7 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 const adminRoutes = require("./routes/admin/index.route");
 const clientRoutes = require("./routes/client/index.route");
+const variableConfig = require("./configs/variable");
 
 const database = require("./configs/database");
 
@@ -19,8 +20,11 @@ app.set("views", path.join(__dirname, "views"));
 // Kết nối db
 database.connect();
 
+// Tạo biến toàn cục trong file PUG (express)
+app.locals.pathAdmin = variableConfig.pathAdmin;
+
 // Thiết lập đường dẫn:
-app.use("/admin", adminRoutes);
+app.use(`/${variableConfig.pathAdmin}`, adminRoutes);
 app.use("/", clientRoutes);
 
 app.listen(PORT, () => {

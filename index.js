@@ -4,7 +4,9 @@ const app = express();
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
+const adminRoutes = require("./routes/admin/index.route");
 const clientRoutes = require("./routes/client/index.route");
+
 const database = require("./configs/database");
 
 // Thiết lập thư mục chứa file tĩnh của Fontend:
@@ -18,6 +20,7 @@ app.set("views", path.join(__dirname, "views"));
 database.connect();
 
 // Thiết lập đường dẫn:
+app.use("/admin", adminRoutes);
 app.use("/", clientRoutes);
 
 app.listen(PORT, () => {

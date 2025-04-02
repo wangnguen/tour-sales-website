@@ -1,5 +1,7 @@
 const AccountAdmin = require("../../models/admin_account.model");
 
+const bcrypt = require("bcryptjs");
+
 const login = (req, res) => {
 	res.render("admin/pages/login", {
 		titlePage: "Đăng nhập",
@@ -27,10 +29,14 @@ const registerPost = async (req, res) => {
 		return; // dung chuong trinh
 	}
 
+	// Mã hoá mật khẩu
+	const salt = await bcrypt.genSalt(10); // Tạo ra chuỗi ngẫu nhiên có 10 ký
+	const hashedPassword = await bcrypt.hash(password, salt);
+
 	const newAccount = new AccountAdmin({
 		fullName: fullName,
 		email: email,
-		password: password,
+		password: hashedPassword,
 		status: "initial",
 	});
 

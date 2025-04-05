@@ -18,7 +18,7 @@ const registerPost = (req, res, next) => {
 				if (!/[A-Z]/.test(value)) {
 					return helpers.error("password.uppercase");
 				}
-				if (!/[a.z]/.test(value)) {
+				if (!/[a-z]/.test(value)) {
 					return helpers.error("password.lowercase");
 				}
 				if (!/\d/.test(value)) {

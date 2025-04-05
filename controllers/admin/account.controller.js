@@ -8,6 +8,43 @@ const login = (req, res) => {
 	});
 };
 
+const loginPost = async (req, res) => {
+	const { email, password } = req.body;
+	const existAccount = await AccountAdmin.findOne({ email: email });
+
+	if (!existAccount) {
+		res.json({
+			code: "error",
+			message: "Email does not exist in the system !",
+		});
+		return; // dung chuong trinh
+	}
+
+	const isPasswordValid = await bcrypt.compare(password, existAccount.password);
+
+	if (!isPasswordValid) {
+		res.json({
+			code: "error",
+			message: "Incorrect password !",
+		});
+		return;
+	}
+
+	if (existAccount.status != "active") {
+		res.json({
+			code: "error",
+			message: "Account not activated !",
+		});
+		return;
+	}
+
+	//res.json js -> json: express
+	res.json({
+		code: "success",
+		message: "Account login successful !",
+	});
+};
+
 const register = (req, res) => {
 	res.render("admin/pages/register", {
 		titlePage: "Đăng kí",
@@ -73,6 +110,7 @@ const resetPassword = (req, res) => {
 
 module.exports = {
 	login,
+	loginPost,
 	register,
 	registerPost,
 	registerInitial,

@@ -1,6 +1,7 @@
 const AccountAdmin = require("../../models/admin_account.model");
 
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const login = (req, res) => {
 	res.render("admin/pages/login", {
@@ -37,6 +38,25 @@ const loginPost = async (req, res) => {
 		});
 		return;
 	}
+
+	// Tạo JWT
+	const token = jwt.sign(
+		{
+			id: existAccount.id,
+			email: existAccount.email,
+		},
+		process.env.JWT_SECRET,
+		{
+			expiresIn: "1d", // token co thoi han 1 ngay
+		},
+	);
+
+	// Lưu token vào cookie
+	res.cookie("token", token, {
+		maxAge: 24 * 60 * 60 * 1000, // token hieu lung 1 ngay
+		httpOnly: true,
+		sameSite: "strict",
+	});
 
 	//res.json js -> json: express
 	res.json({

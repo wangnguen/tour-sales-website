@@ -128,6 +128,14 @@ const resetPassword = (req, res) => {
 	});
 };
 
+const logoutPost = async (req, res) => {
+	res.clearCookie("token");
+	res.json({
+		code: "success",
+		message: "Logout Success !",
+	});
+};
+
 module.exports = {
 	login,
 	loginPost,
@@ -137,4 +145,5 @@ module.exports = {
 	forgotPassword,
 	otpPassword,
 	resetPassword,
+	logoutPost,
 };

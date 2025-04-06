@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const adminRoutes = require("./routes/admin/index.route");
 const clientRoutes = require("./routes/client/index.route");
 const variableConfig = require("./configs/variable");
+const cookieParser = require("cookie-parser");
 
 const database = require("./configs/database");
 
@@ -23,8 +24,14 @@ database.connect();
 // Tạo biến toàn cục trong file PUG (express)
 app.locals.pathAdmin = variableConfig.pathAdmin;
 
+// Tạo biến toàn cục trong các file backend
+global.pathAdmin = variableConfig.pathAdmin;
+
 // Cho phép gửi data lên dạng json
 app.use(express.json()); // chuyen json -> js
+
+// Sử dụng cookie-parser
+app.use(cookieParser());
 
 // Thiết lập đường dẫn:
 app.use(`/${variableConfig.pathAdmin}`, adminRoutes);

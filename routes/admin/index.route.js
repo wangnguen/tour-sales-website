@@ -10,8 +10,10 @@ const contactRoutes = require("./contact.route");
 const settingRoutes = require("./setting.route");
 const profileRoutes = require("./profile.route");
 
+const authMiddleware = require("../../middlewares/admin/auth.middleware");
+
 router.use("/account", accountRoutes);
-router.use("/dashboard", dashboardRoutes);
+router.use("/dashboard", authMiddleware.verifyToken, dashboardRoutes);
 router.use("/category", categoryRoutes);
 router.use("/tour", tourRoutes);
 router.use("/order", orderRoutes);

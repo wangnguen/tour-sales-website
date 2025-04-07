@@ -1,6 +1,6 @@
-const { pathAdmin } = require("../../configs/variable");
 const jwt = require("jsonwebtoken");
 const AccountAdmin = require("../../models/admin_account.model");
+
 const verifyToken = async (req, res, next) => {
 	try {
 		const token = req.cookies.token;

@@ -12,6 +12,12 @@ const profileRoutes = require("./profile.route");
 
 const authMiddleware = require("../../middlewares/admin/auth.middleware");
 
+// tranh luu vao bo nho cache
+router.use((req, res, next) => {
+	res.setHeader("Cache-Control", "no-store");
+	next();
+});
+
 router.use("/account", accountRoutes);
 router.use("/dashboard", authMiddleware.verifyToken, dashboardRoutes);
 router.use("/category", categoryRoutes);

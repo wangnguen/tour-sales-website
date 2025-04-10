@@ -10,7 +10,7 @@ const login = (req, res) => {
 };
 
 const loginPost = async (req, res) => {
-	const { email, password } = req.body;
+	const { email, password, rememberPassword } = req.body;
 	const existAccount = await AccountAdmin.findOne({ email: email });
 
 	if (!existAccount) {
@@ -47,13 +47,13 @@ const loginPost = async (req, res) => {
 		},
 		process.env.JWT_SECRET,
 		{
-			expiresIn: "1d", // token co thoi han 1 ngay
+			expiresIn: rememberPassword ? "30d" : "1d", // token co thoi han 30 hoac 1 ngay
 		},
 	);
 
 	// Lưu token vào cookie
 	res.cookie("token", token, {
-		maxAge: 24 * 60 * 60 * 1000, // token hieu lung 1 ngay
+		maxAge: rememberPassword ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // token hieu luc 30 hoac 1 ngay
 		httpOnly: true,
 		sameSite: "strict",
 	});

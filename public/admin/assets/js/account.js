@@ -210,7 +210,7 @@ if (forgotPasswordForm) {
 						alert(data.message);
 					}
 					if (data.code === "success") {
-						window.location.href = `/${pathAdmin}/account/otp_password`;
+						window.location.href = `/${pathAdmin}/account/otp_password?email=${email}`;
 					}
 				});
 		});
@@ -231,7 +231,32 @@ if (otpPasswordForm) {
 		])
 		.onSuccess((event) => {
 			const otp = event.target.otp.value;
-			console.log(otp);
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const email = urlParams.get("email");
+
+			const dataFinal = {
+				otp: otp,
+				email: email,
+			};
+
+			fetch(`/${pathAdmin}/account/otp_password`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(dataFinal),
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.code === "error") {
+						alert(data.message);
+					}
+					
+					if (data.code === "success") {
+						window.location.href = `/${pathAdmin}/account/reset_password`;
+					}
+				});
 		});
 }
 // End OTP Password Form

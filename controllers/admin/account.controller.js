@@ -174,6 +174,49 @@ const otpPassword = (req, res) => {
 		titlePage: "Nhập mã OTP",
 	});
 };
+
+const otpPasswordPost = async (req, res) => {
+	const { otp, email } = req.body;
+
+	// kiem tra co ton tai ban ghi trong ForgotPassword ko ?
+	const existRecord = await ForgotPassword.findOne({ otp: otp, email: email });
+
+	if (!existRecord) {
+		res.json({
+			code: "error",
+			message: "Mã OTP không chính xác!",
+		});
+		return;
+	}
+	// tim thong tin user trong AccountAdmin
+	const account = await AccountAdmin.findOne({
+		email: email,
+	});
+
+	const token = jwt.sign(
+		{
+			id: account.id,
+			email: account.email,
+		},
+		process.env.JWT_SECRET,
+		{
+			expiresIn: "1d",
+		},
+	);
+
+	// Lưu token vào cookie
+	res.cookie("token", token, {
+		maxAge: 24 * 60 * 60 * 1000,
+		httpOnly: true,
+		sameSite: "strict",
+	});
+
+	res.json({
+		code: "success",
+		message: "Xác thực OTP thành công!",
+	});
+};
+
 const resetPassword = (req, res) => {
 	res.render("admin/pages/reset_password", {
 		titlePage: "Đổi mật khẩu",
@@ -197,6 +240,7 @@ module.exports = {
 	forgotPassword,
 	forgotPasswordPost,
 	otpPassword,
+	otpPasswordPost,
 	resetPassword,
 	logoutPost,
 };

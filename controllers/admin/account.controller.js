@@ -1,7 +1,10 @@
 const AccountAdmin = require("../../models/admin_account.model");
-
+const ForgotPassword = require("../../models/forgot_password.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+const generateHelper = require("../../helpers/generate.helper");
+const mailHelper = require("../../helpers/mail.helper");
 
 const login = (req, res) => {
 	res.render("admin/pages/login", {
@@ -117,6 +120,55 @@ const forgotPassword = (req, res) => {
 		titlePage: "Quên mật khẩu",
 	});
 };
+
+const forgotPasswordPost = async (req, res) => {
+	const { email } = req.body;
+
+	// ktra email co ton tai hay khong
+	const existAccount = AccountAdmin.findOne({ email: email });
+
+	if (!existAccount) {
+		res.json({
+			code: "error",
+			message: "Email không tồn tại trong hệ thống",
+		});
+		return;
+	}
+
+	// kiem tra email da ton tai trong ForgotPassword chua ?
+	const existEmailInForgotPassword = await ForgotPassword.findOne({
+		email: email,
+	});
+
+	if (existEmailInForgotPassword) {
+		res.json({
+			code: "error",
+			message: "Vui lòng gửi lại yêu cầu sau 5 phút",
+		});
+		return;
+	}
+
+	// tao ma otp
+	const otp = generateHelper.generateRandomNumber(6);
+	// luu vao db: email va otp, sau 5p tu dong xoa
+	const newRecord = new ForgotPassword({
+		email: email,
+		otp: otp,
+		expireAt: 5 * 60 * 1000 + Date.now(),
+	});
+	await newRecord.save();
+
+	// gui ma otp qua email cho ng dung
+	const subject = `Mã OTP lấy lại mật khẩu`;
+	const content = `Mã OTP của bạn là <b style="color: green;">${otp}</b>. Mã otp có hiệu lực trong 5 phút, vui lòng không cung cấp cho bất kì ai!`;
+	mailHelper.sendMail(email, subject, content);
+
+	res.json({
+		code: "success",
+		message: "Đã gửi mã otp qua email",
+	});
+};
+
 const otpPassword = (req, res) => {
 	res.render("admin/pages/otp_password", {
 		titlePage: "Nhập mã OTP",
@@ -143,6 +195,7 @@ module.exports = {
 	registerPost,
 	registerInitial,
 	forgotPassword,
+	forgotPasswordPost,
 	otpPassword,
 	resetPassword,
 	logoutPost,

@@ -252,7 +252,7 @@ if (otpPasswordForm) {
 					if (data.code === "error") {
 						alert(data.message);
 					}
-					
+
 					if (data.code === "success") {
 						window.location.href = `/${pathAdmin}/account/reset_password`;
 					}
@@ -308,7 +308,27 @@ if (resetPasswordForm) {
 		])
 		.onSuccess((event) => {
 			const password = event.target.password.value;
-			console.log(password);
+			const dataFinal = {
+				password: password,
+			};
+
+			fetch(`/${pathAdmin}/account/reset_password`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(dataFinal),
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					if (data.code === "error") {
+						alert(data.message);
+					}
+
+					if (data.code === "success") {
+						window.location.href = `/${pathAdmin}/dashboard`;
+					}
+				});
 		});
 }
 // End Reset Password Form

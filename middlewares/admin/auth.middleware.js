@@ -23,6 +23,8 @@ const verifyToken = async (req, res, next) => {
 			res.redirect(`/${pathAdmin}/account/login`);
 			return;
 		}
+		req.account = existAccount;
+
 		next();
 	} catch (error) {
 		res.clearCookie("token");

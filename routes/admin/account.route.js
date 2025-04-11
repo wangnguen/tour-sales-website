@@ -4,6 +4,8 @@ const accountController = require("../../controllers/admin/account.controller");
 
 const accountValidate = require("../../validates/admin/account.validate");
 
+const authMiddleware = require("../../middlewares/admin/auth.middleware");
+
 router.get("/login", accountController.login);
 
 router.post("/login", accountValidate.loginPost, accountController.loginPost);
@@ -23,9 +25,16 @@ router.get("/forgot_password", accountController.forgotPassword);
 router.post("/forgot_password", accountController.forgotPasswordPost);
 
 router.get("/otp_password", accountController.otpPassword);
+
 router.post("/otp_password", accountController.otpPasswordPost);
 
 router.get("/reset_password", accountController.resetPassword);
+
+router.post(
+	"/reset_password",
+	authMiddleware.verifyToken,
+	accountController.resetPasswordPost,
+);
 
 router.post("/logout", accountController.logoutPost);
 

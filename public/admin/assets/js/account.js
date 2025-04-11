@@ -45,10 +45,6 @@ if (loginForm) {
 			const password = event.target.password.value;
 			const rememberPassword = event.target.rememberPassword.checked;
 
-			console.log(email);
-			console.log(password);
-			console.log(rememberPassword);
-
 			const dataFinal = {
 				email: email,
 				password: password,

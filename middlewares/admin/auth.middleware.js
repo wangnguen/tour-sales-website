@@ -25,6 +25,8 @@ const verifyToken = async (req, res, next) => {
 		}
 		req.account = existAccount;
 
+		res.locals.account = existAccount;
+
 		next();
 	} catch (error) {
 		res.clearCookie("token");

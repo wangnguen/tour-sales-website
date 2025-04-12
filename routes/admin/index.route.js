@@ -19,7 +19,8 @@ router.use((req, res, next) => {
 });
 
 router.use("/account", accountRoutes);
-router.use("/dashboard", authMiddleware.verifyToken, dashboardRoutes);
+router.use(authMiddleware.verifyToken);
+router.use("/dashboard", dashboardRoutes);
 router.use("/category", categoryRoutes);
 router.use("/tour", tourRoutes);
 router.use("/order", orderRoutes);

@@ -304,8 +304,11 @@ if (resetPasswordForm) {
 		])
 		.onSuccess((event) => {
 			const password = event.target.password.value;
+			const confirmPassword = event.target["confirm-password"].value;
+
 			const dataFinal = {
 				password: password,
+				confirmPassword: confirmPassword,
 			};
 
 			fetch(`/${pathAdmin}/account/reset_password`, {

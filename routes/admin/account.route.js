@@ -22,17 +22,26 @@ router.get("/register-initial", accountController.registerInitial);
 
 router.get("/forgot_password", accountController.forgotPassword);
 
-router.post("/forgot_password", accountController.forgotPasswordPost);
+router.post(
+	"/forgot_password",
+	accountValidate.forgotPasswordPost,
+	accountController.forgotPasswordPost,
+);
 
 router.get("/otp_password", accountController.otpPassword);
 
-router.post("/otp_password", accountController.otpPasswordPost);
+router.post(
+	"/otp_password",
+	accountValidate.otpPost,
+	accountController.otpPasswordPost,
+);
 
 router.get("/reset_password", accountController.resetPassword);
 
 router.post(
 	"/reset_password",
 	authMiddleware.verifyToken,
+	accountValidate.resetPasswordPost,
 	accountController.resetPasswordPost,
 );
 

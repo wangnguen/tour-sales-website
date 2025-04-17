@@ -1,15 +1,18 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const flash = require("express-flash");
+const session = require("express-session");
 
 const PORT = process.env.PORT || 3000;
+const app = express();
+
+const database = require("./configs/database");
+
 const adminRoutes = require("./routes/admin/index.route");
 const clientRoutes = require("./routes/client/index.route");
 const variableConfig = require("./configs/variable");
-const cookieParser = require("cookie-parser");
-
-const database = require("./configs/database");
 
 // Thiết lập thư mục chứa file tĩnh của Fontend:
 app.use(express.static(path.join(__dirname, "public")));
@@ -31,7 +34,18 @@ global.pathAdmin = variableConfig.pathAdmin;
 app.use(express.json()); // chuyen json -> js
 
 // Sử dụng cookie-parser
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// Nhúng Flash
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: false,
+		cookie: { maxAge: 60000 },
+	}),
+);
+app.use(flash());
 
 // Thiết lập đường dẫn:
 app.use(`/${variableConfig.pathAdmin}`, adminRoutes);

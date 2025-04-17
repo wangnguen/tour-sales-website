@@ -1,0 +1,6 @@
+mixin option(list, level)
+  each item in list
+    //- option(value=item.id) #{"--".repeat(level)} #{item.name}
+    option(value=item.id)= `${Array(level).fill('--').join('')}${item.name}`
+    if(item.children && item.children.length > 0)
+      +option(item.children, level +1)

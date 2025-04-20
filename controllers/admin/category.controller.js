@@ -34,6 +34,7 @@ const list = async (req, res) => {
 		categoryList: categoryList,
 	});
 };
+
 const create = async (req, res) => {
 	const categoryList = await Category.find({
 		deleted: false,
@@ -72,8 +73,73 @@ const createPost = async (req, res) => {
 	});
 };
 
+const edit = async (req, res) => {
+	try {
+		const categoryList = await Category.find({
+			deleted: false,
+		});
+
+		const categoryTree = categoryHelper.buildCategoryTree(categoryList);
+
+		const id = req.params.id;
+
+		const categoryDetail = await Category.findOne({
+			_id: id,
+			deleted: false,
+		});
+
+		res.render("admin/pages/category_edit", {
+			titlePage: "Tạo danh mục",
+			categoryList: categoryTree,
+			categoryDetail: categoryDetail,
+		});
+	} catch (error) {
+		res.redirect(`/${pathAdmin}/category/list`);
+	}
+};
+const editPatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+
+		if (req.body.position) {
+			req.body.position = parseInt(req.body.position);
+		} else {
+			const totalRecord = await Category.countDocuments({});
+			req.body.position = totalRecord + 1;
+		}
+
+		req.body.updatedBy = req.account.id;
+		if (req.file) {
+			req.body.avatar = req.file.path;
+		} else {
+			delete req.body.avatar;
+		}
+
+		await Category.updateOne(
+			{
+				_id: id,
+				deleted: false,
+			},
+			req.body,
+		);
+
+		req.flash("success", "Cập nhật danh mục thành công!");
+
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id is invalid !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	create,
 	createPost,
+	edit,
+	editPatch,
 };

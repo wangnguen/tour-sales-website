@@ -136,10 +136,36 @@ const editPatch = async (req, res) => {
 	}
 };
 
+const deletePatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+		await Category.updateOne(
+			{
+				_id: id,
+			},
+			{
+				deleted: true,
+				deletedBy: req.account.id,
+				deletedAt: Date.now(),
+			},
+		);
+		req.flash("success", "Xoá danh mục thành công !");
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	create,
 	createPost,
 	edit,
 	editPatch,
+	deletePatch,
 };

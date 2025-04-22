@@ -8,11 +8,17 @@ const list = async (req, res) => {
 	const find = {
 		deleted: "false",
 	};
-
+	// Loc theo trang thai
 	if (req.query.status) {
 		find.status = req.query.status;
 	}
+	// Het loc theo trang thai
 
+	// Loc theo nguoi tao
+	if (req.query.createdBy) {
+		find.createdBy = req.query.createdBy;
+	}
+	// Het loc theo nguoi tao
 	const categoryList = await Category.find(find).sort({
 		position: "desc",
 	});
@@ -35,9 +41,14 @@ const list = async (req, res) => {
 		item.updatedAtFormat = moment(item.updatedAt).format("HH:mm - DD/MM/YYYY");
 	}
 
+	// Danh sach tai khoan quan tri
+	const accountAdminList = await AccountAdmin.find({}).select("id fullName");
+	// Het danh sach tai khoan quan tri
+
 	res.render("admin/pages/category_list", {
 		titlePage: "Quản lý danh mục",
 		categoryList: categoryList,
+		accountAdminList: accountAdminList,
 	});
 };
 

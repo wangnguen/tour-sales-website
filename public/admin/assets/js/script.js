@@ -807,3 +807,25 @@ if (filterStatus) {
 	}
 }
 // End Filter status
+
+// Filter created by
+const filterCreatedBy = document.querySelector("[filter-created-by]");
+if (filterCreatedBy) {
+	const url = new URL(window.location.href);
+
+	// lang nghe thay doi lua chon
+	filterCreatedBy.addEventListener("change", () => {
+		const value = filterCreatedBy.value;
+		if (value) {
+			url.searchParams.set("createdBy", value);
+		} else {
+			url.searchParams.delete("createdBy");
+		}
+		window.location.href = url.href;
+	});
+	const valueCurrent = url.searchParams.get("createdBy");
+	if (valueCurrent) {
+		filterCreatedBy.value = valueCurrent;
+	}
+}
+// End Filter created by

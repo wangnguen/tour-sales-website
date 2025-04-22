@@ -5,9 +5,15 @@ const AccountAdmin = require("../../models/admin_account.model");
 const categoryHelper = require("../../helpers/category.helper");
 
 const list = async (req, res) => {
-	const categoryList = await Category.find({
+	const find = {
 		deleted: "false",
-	}).sort({
+	};
+
+	if (req.query.status) {
+		find.status = req.query.status;
+	}
+
+	const categoryList = await Category.find(find).sort({
 		position: "desc",
 	});
 

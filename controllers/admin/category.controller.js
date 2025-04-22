@@ -19,6 +19,23 @@ const list = async (req, res) => {
 		find.createdBy = req.query.createdBy;
 	}
 	// Het loc theo nguoi tao
+
+	// Loc theo ngay tao
+	const dataFilter = {};
+
+	if (req.query.startDate) {
+		const startDate = moment(req.query.startDate).startOf("date").toDate();
+		dataFilter.$gte = startDate;
+	}
+	if (req.query.endDate) {
+		const endDate = moment(req.query.endDate).endOf("date").toDate();
+		dataFilter.$lte = endDate;
+	}
+	if (Object.keys(dataFilter).length > 0) {
+		find.createdAt = dataFilter;
+	}
+	// Het loc theo ngay tao
+
 	const categoryList = await Category.find(find).sort({
 		position: "desc",
 	});

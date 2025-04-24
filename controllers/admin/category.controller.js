@@ -1,5 +1,5 @@
 const moment = require("moment");
-
+const slugify = require("slugify");
 const Category = require("../../models/category.model");
 const AccountAdmin = require("../../models/admin_account.model");
 const categoryHelper = require("../../helpers/category.helper");
@@ -35,6 +35,17 @@ const list = async (req, res) => {
 		find.createdAt = dataFilter;
 	}
 	// Het loc theo ngay tao
+
+	// Tim kiem
+	if (req.query.keyword) {
+		const keyword = slugify(req.query.keyword, {
+			lower: true,
+		});
+		const keywordRegex = new RegExp(keyword, "i");
+
+		find.slug = keywordRegex;
+	}
+	// Het tim kiem
 
 	const categoryList = await Category.find(find).sort({
 		position: "desc",

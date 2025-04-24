@@ -939,3 +939,27 @@ if (changeMulti) {
 	});
 }
 // End change multi
+
+// Search
+const search = document.querySelector("[search]");
+if (search) {
+	const url = new URL(window.location.href);
+	// lang nghe phim dang go
+	search.addEventListener("keyup", (event) => {
+		if (event.code === "Enter") {
+			const value = search;
+			if (value) {
+				url.searchParams.set("keyword", value.value.trim());
+			} else {
+				url.searchParams.delete("keyword");
+			}
+			window.location.href = url.href;
+		}
+	});
+	// hien thi mac dinh
+	const valueCurrent = url.searchParams.get("keyword");
+	if (valueCurrent) {
+		search.value = valueCurrent;
+	}
+}
+// End search

@@ -47,9 +47,34 @@ const list = async (req, res) => {
 	}
 	// Het tim kiem
 
-	const categoryList = await Category.find(find).sort({
-		position: "desc",
-	});
+	// Phan trang
+	const limitItems = 3;
+	let page = 1;
+	if (req.query.page) {
+		const currentPage = parseInt(req.query.page);
+		if (currentPage > 0) {
+			page = currentPage;
+		}
+	}
+	const totalRecord = await Category.countDocuments(find);
+	const totalPage = Math.max(Math.ceil(totalRecord / limitItems), 1);
+	if (page > totalPage) {
+		page = totalPage;
+	}
+	const skip = (page - 1) * limitItems;
+	const pagination = {
+		skip: skip,
+		totalRecord: totalRecord,
+		totalPage: totalPage,
+	};
+	// Het phan trang
+
+	const categoryList = await Category.find(find)
+		.sort({
+			position: "desc",
+		})
+		.limit(limitItems)
+		.skip(skip);
 
 	for (const item of categoryList) {
 		if (item.createdBy) {
@@ -77,6 +102,7 @@ const list = async (req, res) => {
 		titlePage: "Quản lý danh mục",
 		categoryList: categoryList,
 		accountAdminList: accountAdminList,
+		pagination: pagination,
 	});
 };
 

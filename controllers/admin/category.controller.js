@@ -159,11 +159,15 @@ const edit = async (req, res) => {
 			deleted: false,
 		});
 
-		res.render("admin/pages/category_edit", {
-			titlePage: "Tạo danh mục",
-			categoryList: categoryTree,
-			categoryDetail: categoryDetail,
-		});
+		if (categoryDetail) {
+			res.render("admin/pages/category_edit", {
+				titlePage: "Tạo danh mục",
+				categoryList: categoryTree,
+				categoryDetail: categoryDetail,
+			});
+		} else {
+			res.redirect(`/${pathAdmin}/category/list`);
+		}
 	} catch (error) {
 		res.redirect(`/${pathAdmin}/category/list`);
 	}

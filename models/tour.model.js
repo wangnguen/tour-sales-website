@@ -11,7 +11,7 @@ const schema = new mongoose.Schema(
 		avatar: String,
 		priceAdult: Number,
 		priceChildren: Number,
-		priceAdultBaby: Number,
+		priceBaby: Number,
 		priceNewAdult: Number,
 		priceNewChildren: Number,
 		priceNewBaby: Number,

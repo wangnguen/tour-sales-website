@@ -221,9 +221,37 @@ const editPatch = async (req, res) => {
 	}
 };
 
-const trash = (req, res) => {
+const trash = async (req, res) => {
+	const find = {
+		deleted: true,
+	};
+
+	const tourList = await Tour.find(find).sort({
+		deletedAt: "desc",
+	});
+
+	for (const item of tourList) {
+		if (item.createdBy) {
+			const infoAccountCreated = await AccountAdmin.findOne({
+				_id: item.createdBy,
+			});
+			item.createdByFullName = infoAccountCreated.fullName;
+		}
+
+		if (item.deletedBy) {
+			const infoAccountDeleted = await AccountAdmin.findOne({
+				_id: item.updatedBy,
+			});
+			item.deletedByFullName = infoAccountDeleted.fullName;
+		}
+
+		item.createdAtFormat = moment(item.createdAt).format("HH:mm - DD/MM/YYYY");
+		item.deletedAtFormat = moment(item.deletedAt).format("HH:mm - DD/MM/YYYY");
+	}
+
 	res.render("admin/pages/tour_trash", {
 		titlePage: "Thùng rác tour",
+		tourList: tourList,
 	});
 };
 

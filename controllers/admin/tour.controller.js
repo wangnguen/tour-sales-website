@@ -302,6 +302,25 @@ const undoPatch = async (req, res) => {
 		});
 	}
 };
+const deleteDestroyPatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+		await Tour.deleteOne({
+			_id: id,
+		});
+
+		req.flash("success", "Đã xoá vĩnh viễn tour thành công !");
+
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
+		});
+	}
+};
 
 module.exports = {
 	list,
@@ -312,4 +331,5 @@ module.exports = {
 	trash,
 	deletePatch,
 	undoPatch,
+	deleteDestroyPatch,
 };

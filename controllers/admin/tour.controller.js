@@ -76,31 +76,31 @@ const createPost = async (req, res) => {
 	req.body.priceBaby = req.body.priceBaby ? parseInt(req.body.priceBaby) : 0;
 
 	req.body.priceNewAdult = req.body.priceNewAdult
-		? parseInt(req.body.priceAdult)
+		? parseInt(req.body.priceNewAdult)
 		: req.body.priceAdult;
 	req.body.priceNewChildren = req.body.priceNewChildren
-		? parseInt(req.body.priceAdult)
+		? parseInt(req.body.priceNewChildren)
 		: req.body.priceChildren;
 	req.body.priceNewBaby = req.body.priceNewBaby
-		? parseInt(req.body.priceAdult)
+		? parseInt(req.body.priceNewBaby)
 		: req.body.priceBaby;
 
-	req.body.stockAdult = req.body.priceNewBaby
-		? parseInt(req.body.stockAdult)
-		: 0;
+	req.body.stockAdult = req.body.stockAdult ? parseInt(req.body.stockAdult) : 0;
 	req.body.stockChildren = req.body.stockChildren
 		? parseInt(req.body.stockChildren)
 		: 0;
 	req.body.stockBaby = req.body.stockBaby ? parseInt(req.body.stockBaby) : 0;
 
 	req.body.locations = req.body.locations ? JSON.parse(req.body.locations) : [];
+
 	req.body.departureDate = req.body.departureDate
 		? new Date(req.body.departureDate)
 		: null;
+
 	req.body.schedules = req.body.schedules ? JSON.parse(req.body.schedules) : [];
 
 	const newRecord = new Tour(req.body);
-	newRecord.save();
+	await newRecord.save();
 
 	req.flash("success", "Tạo tour thành công !");
 
@@ -184,16 +184,19 @@ const editPatch = async (req, res) => {
 		req.body.stockAdult = req.body.stockAdult
 			? parseInt(req.body.stockAdult)
 			: 0;
-		req.body.stockChildren = req.body.stockAdult
+		req.body.stockChildren = req.body.stockChildren
 			? parseInt(req.body.stockChildren)
 			: 0;
 		req.body.stockBaby = req.body.stockBaby ? parseInt(req.body.stockBaby) : 0;
+
 		req.body.locations = req.body.locations
 			? JSON.parse(req.body.locations)
 			: [];
+
 		req.body.departureDate = req.body.departureDate
 			? new Date(req.body.departureDate)
 			: null;
+
 		req.body.schedules = req.body.schedules
 			? JSON.parse(req.body.schedules)
 			: [];
@@ -224,6 +227,31 @@ const trash = (req, res) => {
 	});
 };
 
+const deletePatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+		await Tour.updateOne(
+			{
+				_id: id,
+			},
+			{
+				deleted: true,
+				deletedBy: req.account.id,
+				deletedAt: Date.now(),
+			},
+		);
+		req.flash("success", "Xoá tour thành công !");
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	create,
@@ -231,4 +259,5 @@ module.exports = {
 	edit,
 	editPatch,
 	trash,
+	deletePatch,
 };

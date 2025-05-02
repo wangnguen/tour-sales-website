@@ -336,26 +336,26 @@ if (tourCreateForm) {
 			});
 			// End schedules
 
-			console.log(name);
-			console.log(category);
-			console.log(position);
-			console.log(status);
-			console.log(avatar);
-			console.log(priceAdult);
-			console.log(priceChildren);
-			console.log(priceBaby);
-			console.log(priceNewAdult);
-			console.log(priceNewChildren);
-			console.log(priceNewBaby);
-			console.log(stockAdult);
-			console.log(stockChildren);
-			console.log(stockBaby);
-			console.log(locations);
-			console.log(time);
-			console.log(vehicle);
-			console.log(departureDate);
-			console.log(information);
-			console.log(schedules);
+			// console.log(name);
+			// console.log(category);
+			// console.log(position);
+			// console.log(status);
+			// console.log(avatar);
+			// console.log(priceAdult);
+			// console.log(priceChildren);
+			// console.log(priceBaby);
+			// console.log(priceNewAdult);
+			// console.log(priceNewChildren);
+			// console.log(priceNewBaby);
+			// console.log(stockAdult);
+			// console.log(stockChildren);
+			// console.log(stockBaby);
+			// console.log(locations);
+			// console.log(time);
+			// console.log(vehicle);
+			// console.log(departureDate);
+			// console.log(information);
+			// console.log(schedules);
 
 			// Tạo formData
 			const formData = new FormData();
@@ -1038,6 +1038,50 @@ if (filterRest) {
 	});
 }
 // End filter reset
+
+// Filter category
+const filterCategory = document.querySelector("[filter-category]");
+if (filterCategory) {
+	const url = new URL(window.location.href);
+
+	// lang nghe thay doi lua chon
+	filterCategory.addEventListener("change", () => {
+		const value = filterCategory.value;
+		if (value) {
+			url.searchParams.set("category", value);
+		} else {
+			url.searchParams.delete("category");
+		}
+		window.location.href = url.href;
+	});
+	const valueCurrent = url.searchParams.get("category");
+	if (valueCurrent) {
+		filterCategory.value = valueCurrent;
+	}
+}
+// End filter category
+
+// Filter price level
+const filterPriceLevel = document.querySelector("[filter-price-level]");
+if (filterPriceLevel) {
+	const url = new URL(window.location.href);
+
+	filterPriceLevel.addEventListener("change", () => {
+		const value = filterPriceLevel.value;
+		if (value) {
+			url.searchParams.set("priceLevel", value);
+		} else {
+			url.searchParams.delete("priceLevel");
+		}
+		window.location.href = url.href;
+	});
+	// hien thi mac dinh
+	const valueCurrent = url.searchParams.get("priceLevel");
+	if (valueCurrent) {
+		filterPriceLevel.value = valueCurrent;
+	}
+}
+// End filter price level
 
 // Check all
 const checkAll = document.querySelector("[check-all]");

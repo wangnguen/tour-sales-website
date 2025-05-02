@@ -40,6 +40,7 @@ const list = async (req, res) => {
 	if (req.query.keyword) {
 		const keyword = slugify(req.query.keyword, {
 			lower: true,
+			locale: "vi",
 		});
 		const keywordRegex = new RegExp(keyword, "i");
 
@@ -48,7 +49,7 @@ const list = async (req, res) => {
 	// Het tim kiem
 
 	// Phan trang
-	const limitItems = 3;
+	const limitItems = 5;
 	let page = 1;
 	if (req.query.page) {
 		const currentPage = parseInt(req.query.page);
@@ -58,7 +59,9 @@ const list = async (req, res) => {
 	}
 	const totalRecord = await Category.countDocuments(find);
 	const totalPage = Math.max(Math.ceil(totalRecord / limitItems), 1);
-	if (page > totalPage) {
+	if (totalPage === 0) {
+		page = 1;
+	} else if (page > totalPage) {
 		page = totalPage;
 	}
 	const skip = (page - 1) * limitItems;

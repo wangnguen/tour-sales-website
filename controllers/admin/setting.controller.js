@@ -60,9 +60,14 @@ const accountAdminCreate = (req, res) => {
 		titlePage: "Tạo tài khoản quản trị",
 	});
 };
-const roleList = (req, res) => {
+const roleList = async (req, res) => {
+	const roleList = await Role.find({
+		deleted: false,
+	});
+
 	res.render("admin/pages/setting_role_list", {
 		titlePage: "Nhóm quyền",
+		roleList: roleList,
 	});
 };
 

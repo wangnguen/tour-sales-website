@@ -23,6 +23,11 @@ router.patch(
 router.get("/account_admin/list", settingController.accountAdminList);
 
 router.get("/account_admin/create", settingController.accountAdminCreate);
+router.post(
+	"/account_admin/create",
+	upload.single("avatar"),
+	settingController.accountAdminCreatePost,
+);
 
 router.get("/role/list", settingController.roleList);
 

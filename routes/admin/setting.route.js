@@ -29,6 +29,14 @@ router.post(
 	settingController.accountAdminCreatePost,
 );
 
+router.get("/account_admin/edit/:id", settingController.accountAdminEdit);
+
+router.patch(
+	"/account_admin/edit/:id",
+	upload.single("avatar"),
+	settingController.accountAdminEditPatch,
+);
+
 router.get("/role/list", settingController.roleList);
 
 router.get("/role/create", settingController.roleCreate);

@@ -52,9 +52,28 @@ const websiteInfoPatch = async (req, res) => {
 	});
 };
 
-const accountAdminList = (req, res) => {
+const accountAdminList = async (req, res) => {
+	const accountAdminList = await AccountAdmin.find({
+		deleted: false,
+	}).sort({
+		createdAt: "desc",
+	});
+
+	for (const item of accountAdminList) {
+		if (item.role) {
+			const roleInfo = await Role.findOne({
+				_id: item.role,
+			});
+
+			if (roleInfo) {
+				item.roleName = roleInfo.name;
+			}
+		}
+	}
+
 	res.render("admin/pages/setting_account_admin_list", {
 		titlePage: "Tài khoản quản trị",
+		accountAdminList: accountAdminList,
 	});
 };
 const accountAdminCreate = async (req, res) => {
@@ -93,6 +112,68 @@ const accountAdminCreatePost = async (req, res) => {
 	res.json({
 		code: "success",
 	});
+};
+
+const accountAdminEdit = async (req, res) => {
+	try {
+		const roleList = await Role.find({
+			deleted: false,
+		});
+
+		const id = req.params.id;
+		const accountAdminDetail = await AccountAdmin.findOne({
+			_id: id,
+			deleted: false,
+		});
+
+		if (!accountAdminDetail) {
+			res.redirect(`/${pathAdmin}/setting/account_admin/list`);
+			return;
+		}
+
+		res.render("admin/pages/setting_account_admin_edit", {
+			pageTitle: "Chỉnh sửa tài khoản quản trị",
+			roleList: roleList,
+			accountAdminDetail: accountAdminDetail,
+		});
+	} catch (error) {
+		res.redirect(`/${pathAdmin}/setting/account_admin/list`);
+	}
+};
+
+const accountAdminEditPatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+
+		req.body.updatedBy = req.account.id;
+		if (req.file) {
+			req.body.avatar = req.file.path;
+		} else {
+			delete req.body.avatar;
+		}
+
+		// Mã hóa mật khẩu với bcrypt
+		if (req.body.password) {
+			const salt = await bcrypt.genSalt(10); // Tạo salt - Chuỗi ngẫu nhiên có 10 ký tự
+			req.body.password = await bcrypt.hash(req.body.password, salt); // Mã hóa mật khẩu
+		}
+
+		await AccountAdmin.updateOne(
+			{
+				_id: id,
+				deleted: false,
+			},
+			req.body,
+		);
+
+		req.flash("success", "Cập nhật tài khoản quản trị thành công!");
+
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.redirect(`/${pathAdmin}/setting/account_admin/list`);
+	}
 };
 
 const roleList = async (req, res) => {
@@ -179,6 +260,8 @@ module.exports = {
 	accountAdminList,
 	accountAdminCreate,
 	accountAdminCreatePost,
+	accountAdminEdit,
+	accountAdminEditPatch,
 	roleList,
 	roleCreate,
 	roleCreatePost,

@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 
 const SettingWebsiteInfo = require("../../models/setting_website_info.model");
 const Role = require("../../models/role.model");
@@ -53,9 +54,72 @@ const websiteInfoPatch = async (req, res) => {
 };
 
 const accountAdminList = async (req, res) => {
-	const accountAdminList = await AccountAdmin.find({
+	const find = {
 		deleted: false,
-	}).sort({
+	};
+
+	// loc theo trang thai
+	if (req.query.status) {
+		find.status = req.query.status;
+	}
+	// het loc theo trang thai
+
+	// Loc theo ngay tao
+	const dataFilter = {};
+
+	if (req.query.startDate) {
+		const startDate = moment(req.query.startDate).startOf("date").toDate();
+		dataFilter.$gte = startDate;
+	}
+	if (req.query.endDate) {
+		const endDate = moment(req.query.endDate).endOf("date").toDate();
+		dataFilter.$lte = endDate;
+	}
+	if (Object.keys(dataFilter).length > 0) {
+		find.createdAt = dataFilter;
+	}
+	// Het loc theo ngay tao
+
+	// loc theo quyen
+	if (req.query.role) {
+		find.role = req.query.role;
+	}
+	// het loc theo quyen
+
+	// Tìm kiếm
+	if (req.query.keyword) {
+		const keyword = req.query.keyword;
+		const keywordRegex = new RegExp(keyword, "i");
+		console.log(keywordRegex);
+		find.fullName = keywordRegex;
+	}
+	// Hết Tìm kiếm
+
+	// Phân trang
+	const limitItems = 5;
+	let page = 1;
+	if (req.query.page) {
+		const currentPage = parseInt(req.query.page);
+		if (currentPage > 0) {
+			page = currentPage;
+		}
+	}
+	const totalRecord = await AccountAdmin.countDocuments(find);
+	const totalPage = Math.ceil(totalRecord / limitItems);
+	if (totalPage === 0) {
+		page = 1;
+	} else if (page > totalPage) {
+		page = totalPage;
+	}
+	const skip = (page - 1) * limitItems;
+	const pagination = {
+		skip: skip,
+		totalRecord: totalRecord,
+		totalPage: totalPage,
+	};
+	// Hết Phân trang
+
+	const accountAdminList = await AccountAdmin.find(find).sort({
 		createdAt: "desc",
 	});
 
@@ -71,9 +135,16 @@ const accountAdminList = async (req, res) => {
 		}
 	}
 
+	const roleList = await Role.find({
+		deleted: false,
+	});
+
 	res.render("admin/pages/setting_account_admin_list", {
 		titlePage: "Tài khoản quản trị",
 		accountAdminList: accountAdminList,
+		roleList: roleList,
+		
+		pagination: pagination,
 	});
 };
 const accountAdminCreate = async (req, res) => {
@@ -253,6 +324,49 @@ const roleEditPatch = async (req, res) => {
 		});
 	}
 };
+
+const changeMultiPatch = async (req, res) => {
+	try {
+		const { option, ids } = req.body;
+		switch (option) {
+			case "active":
+			case "inactive":
+				await AccountAdmin.updateMany(
+					{
+						_id: { $in: ids },
+					},
+					{
+						status: option,
+					},
+				);
+				req.flash("success", "Đổi trạng thái thành công !");
+				break;
+
+			case "delete":
+				await AccountAdmin.updateMany(
+					{
+						_id: { $in: ids },
+					},
+					{
+						deleted: true,
+						deletedBy: req.account.id,
+						deletedAt: Date.now(),
+					},
+				);
+				req.flash("success", "Xoá thành công !");
+				break;
+		}
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không tồn tại trong hệ thống !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	websiteInfo,
@@ -267,4 +381,5 @@ module.exports = {
 	roleCreatePost,
 	roleEdit,
 	roleEditPatch,
+	changeMultiPatch,
 };

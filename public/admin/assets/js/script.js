@@ -1367,6 +1367,28 @@ if (filterPriceLevel) {
 }
 // End filter price level
 
+// Filter role
+const filterRole = document.querySelector("[filter-role]");
+if (filterRole) {
+	const url = new URL(window.location.href);
+
+	// lang nghe thay doi lua chon
+	filterRole.addEventListener("change", () => {
+		const value = filterRole.value;
+		if (value) {
+			url.searchParams.set("role", value);
+		} else {
+			url.searchParams.delete("role");
+		}
+		window.location.href = url.href;
+	});
+	const valueCurrent = url.searchParams.get("role");
+	if (valueCurrent) {
+		filterRole.value = valueCurrent;
+	}
+}
+// End filter role
+
 // Check all
 const checkAll = document.querySelector("[check-all]");
 if (checkAll) {

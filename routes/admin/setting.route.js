@@ -58,4 +58,6 @@ router.patch(
 	settingController.roleEditPatch,
 );
 
+router.patch("/change-multi", settingController.changeMultiPatch);
+
 module.exports = router;

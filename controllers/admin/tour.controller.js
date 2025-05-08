@@ -33,7 +33,6 @@ const list = async (req, res) => {
 			locale: "vi",
 		});
 		const keywordRegex = new RegExp(keyword, "i");
-		console.log(keywordRegex);
 		find.slug = keywordRegex;
 	}
 	// Hết Tìm kiếm

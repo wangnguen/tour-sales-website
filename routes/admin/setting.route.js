@@ -60,4 +60,6 @@ router.patch(
 
 router.patch("/change-multi", settingController.changeMultiPatch);
 
+router.patch("/account_admin/delete/:id", settingController.deletePatch);
+
 module.exports = router;

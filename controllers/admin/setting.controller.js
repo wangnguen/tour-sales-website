@@ -143,7 +143,7 @@ const accountAdminList = async (req, res) => {
 		titlePage: "Tài khoản quản trị",
 		accountAdminList: accountAdminList,
 		roleList: roleList,
-		
+
 		pagination: pagination,
 	});
 };
@@ -367,6 +367,31 @@ const changeMultiPatch = async (req, res) => {
 	}
 };
 
+const deletePatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+		await AccountAdmin.updateOne(
+			{
+				_id: id,
+			},
+			{
+				deleted: true,
+				deletedBy: req.account.id,
+				deletedAt: Date.now(),
+			},
+		);
+		req.flash("success", "Xoá tài khoản quản trị thành công !");
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	websiteInfo,
@@ -382,4 +407,5 @@ module.exports = {
 	roleEdit,
 	roleEditPatch,
 	changeMultiPatch,
+	deletePatch,
 };

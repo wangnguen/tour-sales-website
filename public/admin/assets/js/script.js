@@ -1119,7 +1119,7 @@ if (profileChangePasswordForm) {
 		])
 		.onSuccess((event) => {
 			const password = event.target.password.value;
-			
+
 			const dataFinal = {
 				password: password,
 			};

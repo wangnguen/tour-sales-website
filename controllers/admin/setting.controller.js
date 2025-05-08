@@ -90,7 +90,6 @@ const accountAdminList = async (req, res) => {
 	if (req.query.keyword) {
 		const keyword = req.query.keyword;
 		const keywordRegex = new RegExp(keyword, "i");
-		console.log(keywordRegex);
 		find.fullName = keywordRegex;
 	}
 	// Hết Tìm kiếm
@@ -248,9 +247,16 @@ const accountAdminEditPatch = async (req, res) => {
 };
 
 const roleList = async (req, res) => {
-	const roleList = await Role.find({
-		deleted: false,
-	});
+	const find = { deleted: false };
+	// Tìm kiếm
+	if (req.query.keyword) {
+		const keyword = req.query.keyword;
+		const keywordRegex = new RegExp(keyword, "i");
+		find.name = keywordRegex;
+	}
+	// Hết Tìm kiếm
+
+	const roleList = await Role.find(find);
 
 	res.render("admin/pages/setting_role_list", {
 		titlePage: "Nhóm quyền",
@@ -392,6 +398,60 @@ const deletePatch = async (req, res) => {
 	}
 };
 
+const changeMultiRolePatch = async (req, res) => {
+	try {
+		const { option, ids } = req.body;
+		switch (option) {
+			case "delete":
+				await Role.updateMany(
+					{
+						_id: { $in: ids },
+					},
+					{
+						deleted: true,
+						deletedBy: req.account.id,
+						deletedAt: Date.now(),
+					},
+				);
+				req.flash("success", "Xoá thành công !");
+				break;
+		}
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không tồn tại trong hệ thống !",
+		});
+	}
+};
+
+const deleteRolePatch = async (req, res) => {
+	try {
+		const id = req.params.id;
+		await Role.updateOne(
+			{
+				_id: id,
+			},
+			{
+				deleted: true,
+				deletedBy: req.account.id,
+				deletedAt: Date.now(),
+			},
+		);
+		req.flash("success", "Xoá quyền thành công !");
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
+		});
+	}
+};
+
 module.exports = {
 	list,
 	websiteInfo,
@@ -408,4 +468,6 @@ module.exports = {
 	roleEditPatch,
 	changeMultiPatch,
 	deletePatch,
+	changeMultiRolePatch,
+	deleteRolePatch,
 };

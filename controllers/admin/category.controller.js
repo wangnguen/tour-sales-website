@@ -125,6 +125,14 @@ const create = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
+	if (!req.permissions.includes("category-create")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	if (req.body.position) {
 		req.body.position = parseInt(req.body.position);
 	} else {
@@ -176,6 +184,14 @@ const edit = async (req, res) => {
 	}
 };
 const editPatch = async (req, res) => {
+	if (!req.permissions.includes("category-edit")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	try {
 		const id = req.params.id;
 
@@ -215,6 +231,13 @@ const editPatch = async (req, res) => {
 };
 
 const deletePatch = async (req, res) => {
+	if (!req.permissions.includes("category-delete")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	try {
 		const id = req.params.id;
 		await Category.updateOne(
@@ -245,6 +268,13 @@ const changeMultiPatch = async (req, res) => {
 		switch (option) {
 			case "active":
 			case "inactive":
+				if (!req.permissions.includes("category-edit")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await Category.updateMany(
 					{
 						_id: { $in: ids },
@@ -257,6 +287,13 @@ const changeMultiPatch = async (req, res) => {
 				break;
 
 			case "delete":
+				if (!req.permissions.includes("category-delete")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await Category.updateMany(
 					{
 						_id: { $in: ids },

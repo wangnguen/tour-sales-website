@@ -11,6 +11,7 @@ const list = (req, res) => {
 		titlePage: "Cài đặt chung",
 	});
 };
+
 const websiteInfo = async (req, res) => {
 	const settingWebsiteInfo = await SettingWebsiteInfo.findOne({});
 
@@ -21,6 +22,14 @@ const websiteInfo = async (req, res) => {
 };
 
 const websiteInfoPatch = async (req, res) => {
+	if (!req.permissions.includes("webiste-info-edit")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	if (req.files && req.files.logo) {
 		req.body.logo = req.files.logo[0].path;
 	} else {
@@ -146,6 +155,7 @@ const accountAdminList = async (req, res) => {
 		pagination: pagination,
 	});
 };
+
 const accountAdminCreate = async (req, res) => {
 	const roleList = await Role.find({ deleted: false });
 
@@ -156,6 +166,14 @@ const accountAdminCreate = async (req, res) => {
 };
 
 const accountAdminCreatePost = async (req, res) => {
+	if (!req.permissions.includes("account-admin-create")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	const existAccount = await AccountAdmin.findOne({
 		email: req.body.email,
 	});
@@ -202,7 +220,7 @@ const accountAdminEdit = async (req, res) => {
 		}
 
 		res.render("admin/pages/setting_account_admin_edit", {
-			pageTitle: "Chỉnh sửa tài khoản quản trị",
+			titlePage: "Chỉnh sửa tài khoản quản trị",
 			roleList: roleList,
 			accountAdminDetail: accountAdminDetail,
 		});
@@ -212,6 +230,13 @@ const accountAdminEdit = async (req, res) => {
 };
 
 const accountAdminEditPatch = async (req, res) => {
+	if (!req.permissions.includes("account-admin-edit")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	try {
 		const id = req.params.id;
 
@@ -270,7 +295,15 @@ const roleCreate = (req, res) => {
 		permissionList: permissionConfig.permissionList,
 	});
 };
+
 const roleCreatePost = async (req, res) => {
+	if (!req.permissions.includes("role-create")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	req.body.createdBy = req.account.id;
 	req.body.updatedBy = req.account.id;
 
@@ -306,9 +339,15 @@ const roleEdit = async (req, res) => {
 };
 
 const roleEditPatch = async (req, res) => {
+	if (!req.permissions.includes("role-edit")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	try {
 		const id = req.params.id;
-		console.log(id);
 		req.body.updatedBy = req.account.id;
 
 		await Role.updateOne(
@@ -337,6 +376,13 @@ const changeMultiPatch = async (req, res) => {
 		switch (option) {
 			case "active":
 			case "inactive":
+				if (!req.permissions.includes("account-admin-edit")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await AccountAdmin.updateMany(
 					{
 						_id: { $in: ids },
@@ -349,6 +395,13 @@ const changeMultiPatch = async (req, res) => {
 				break;
 
 			case "delete":
+				if (!req.permissions.includes("account-admin-delete")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await AccountAdmin.updateMany(
 					{
 						_id: { $in: ids },
@@ -374,6 +427,14 @@ const changeMultiPatch = async (req, res) => {
 };
 
 const deletePatch = async (req, res) => {
+	if (!req.permissions.includes("account-admin-delete")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	try {
 		const id = req.params.id;
 		await AccountAdmin.updateOne(
@@ -403,6 +464,14 @@ const changeMultiRolePatch = async (req, res) => {
 		const { option, ids } = req.body;
 		switch (option) {
 			case "delete":
+				if (!req.permissions.includes("role-delete")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
+
 				await Role.updateMany(
 					{
 						_id: { $in: ids },
@@ -413,7 +482,7 @@ const changeMultiRolePatch = async (req, res) => {
 						deletedAt: Date.now(),
 					},
 				);
-				req.flash("success", "Xoá thành công !");
+				req.flash("success", "Xoá quyền thành công !");
 				break;
 		}
 		res.json({
@@ -428,6 +497,13 @@ const changeMultiRolePatch = async (req, res) => {
 };
 
 const deleteRolePatch = async (req, res) => {
+	if (!req.permissions.includes("role-delete")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	try {
 		const id = req.params.id;
 		await Role.updateOne(

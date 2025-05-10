@@ -1,6 +1,5 @@
 const moment = require("moment");
 const slugify = require("slugify");
-const mongoose = require("mongoose");
 
 const Category = require("../../models/category.model");
 const City = require("../../models/city.model");
@@ -147,7 +146,7 @@ const list = async (req, res) => {
 	// Hết Danh sách tài khoản quản trị
 
 	res.render("admin/pages/tour_list", {
-		pageTitle: "Quản lý tour",
+		titlePage: "Quản lý tour",
 		tourList: tourList,
 		accountAdminList: accountAdminList,
 		categoryList: categoryTree,
@@ -171,6 +170,14 @@ const create = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
+	if (!req.permissions.includes("tour-create")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	if (req.body.position) {
 		req.body.position = parseInt(req.body.position);
 	} else {
@@ -245,7 +252,7 @@ const edit = async (req, res) => {
 			const cityList = await City.find({});
 
 			res.render("admin/pages/tour_edit", {
-				pageTitle: "Chỉnh sửa tour",
+				titlePage: "Chỉnh sửa tour",
 				categoryList: categoryTree,
 				cityList: cityList,
 				tourDetail: tourDetail,
@@ -259,6 +266,13 @@ const edit = async (req, res) => {
 };
 
 const editPatch = async (req, res) => {
+	if (!req.permissions.includes("tour-edit")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
 	try {
 		const id = req.params.id;
 
@@ -330,6 +344,39 @@ const editPatch = async (req, res) => {
 		res.json({
 			code: "error",
 			message: "Id không hợp lệ!",
+		});
+	}
+};
+
+const deletePatch = async (req, res) => {
+	if (!req.permissions.includes("tour-delete")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
+	try {
+		const id = req.params.id;
+		await Tour.updateOne(
+			{
+				_id: id,
+			},
+			{
+				deleted: true,
+				deletedBy: req.account.id,
+				deletedAt: Date.now(),
+			},
+		);
+		req.flash("success", "Xoá tour thành công !");
+		res.json({
+			code: "success",
+		});
+	} catch (error) {
+		res.json({
+			code: "error",
+			message: "Id không hợp lệ !",
 		});
 	}
 };
@@ -407,32 +454,15 @@ const trash = async (req, res) => {
 	});
 };
 
-const deletePatch = async (req, res) => {
-	try {
-		const id = req.params.id;
-		await Tour.updateOne(
-			{
-				_id: id,
-			},
-			{
-				deleted: true,
-				deletedBy: req.account.id,
-				deletedAt: Date.now(),
-			},
-		);
-		req.flash("success", "Xoá tour thành công !");
-		res.json({
-			code: "success",
-		});
-	} catch (error) {
+const undoPatch = async (req, res) => {
+	if (!req.permissions.includes("tour-trash")) {
 		res.json({
 			code: "error",
-			message: "Id không hợp lệ !",
+			message: "Không có quyến sử dụng tính năng này !",
 		});
+		return;
 	}
-};
 
-const undoPatch = async (req, res) => {
 	try {
 		const id = req.params.id;
 		await Tour.updateOne(
@@ -454,7 +484,16 @@ const undoPatch = async (req, res) => {
 		});
 	}
 };
+
 const deleteDestroyPatch = async (req, res) => {
+	if (!req.permissions.includes("tour-trash")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	try {
 		const id = req.params.id;
 		await Tour.deleteOne({
@@ -475,6 +514,14 @@ const deleteDestroyPatch = async (req, res) => {
 };
 
 const trashChangeMultiPatch = async (req, res) => {
+	if (!req.permissions.includes("tour-trash")) {
+		res.json({
+			code: "error",
+			message: "Không có quyến sử dụng tính năng này !",
+		});
+		return;
+	}
+
 	try {
 		const { option, ids } = req.body;
 
@@ -515,6 +562,13 @@ const changeMultiPatch = async (req, res) => {
 		switch (option) {
 			case "active":
 			case "inactive":
+				if (!req.permissions.includes("tour-edit")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await Tour.updateMany(
 					{
 						_id: { $in: ids },
@@ -527,6 +581,13 @@ const changeMultiPatch = async (req, res) => {
 				break;
 
 			case "delete":
+				if (!req.permissions.includes("tour-delete")) {
+					res.json({
+						code: "error",
+						message: "Không có quyến sử dụng tính năng này !",
+					});
+					return;
+				}
 				await Tour.updateMany(
 					{
 						_id: { $in: ids },

@@ -31,10 +31,10 @@ block main
         .inner-item
           select(filter-price-level)
             option(value="") Mức giá
-            option(value="under2") Dưới 2tr
-            option(value="2to4") 2tr đến 4tr
-            option(value="4to8") 4tr đến 8tr
-            option(value="over8") Trên 8tr
+            option(value="0-1999999") Dưới 2tr
+            option(value="2000000-4000000") 2tr đến 4tr
+            option(value="4000000-8000000") 4tr đến 8tr
+            option(value="8000000-100000000") Trên 8tr
         .inner-item.inner-reset(filter-reset)
           <i class="fa-solid fa-rotate-left"></i> Xóa bộ lọc
     //- End Section 4

@@ -66,23 +66,13 @@ const list = async (req, res) => {
 	const dataPriceLevel = {};
 
 	if (req.query.priceLevel) {
-		const price = req.query.priceLevel;
-		switch (price) {
-			case "under2":
-				dataPriceLevel.$lt = 2000000;
-				break;
-			case "2to4":
-				dataPriceLevel.$gte = 2000000;
-				dataPriceLevel.$lte = 4000000;
-				break;
-			case "4to8":
-				dataPriceLevel.$gte = 4000000;
-				dataPriceLevel.$lte = 8000000;
-				break;
-			case "over8":
-				dataPriceLevel.$gt = 8000000;
-				break;
-		}
+		const [priceMin, priceMax] = req.query.priceLevel
+			.split("-")
+			.map((item) => parseInt(item));
+		find.priceNewAdult = {
+			$gte: priceMin,
+			$lte: priceMax,
+		};
 	}
 
 	if (Object.keys(dataPriceLevel).length > 0) {

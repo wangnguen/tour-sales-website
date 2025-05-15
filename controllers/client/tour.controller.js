@@ -65,6 +65,7 @@ const detail = async (req, res) => {
 		res.render("client/pages/tour_detail", {
 			titlePage: "Chi tiết tour",
 			breadcrumb: breadcrumb,
+			tourDetail,
 		});
 	} else {
 		res.redirect("/");

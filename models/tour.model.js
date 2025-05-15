@@ -24,6 +24,7 @@ const schema = new mongoose.Schema(
 		departureDate: Date,
 		information: String,
 		schedules: Array,
+		images: Array,
 		description: String,
 		createdBy: String,
 		updatedBy: String,

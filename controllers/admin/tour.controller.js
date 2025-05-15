@@ -177,7 +177,11 @@ const createPost = async (req, res) => {
 
 	req.body.createdBy = req.account.id;
 	req.body.updatedBy = req.account.id;
-	req.body.avatar = req.file ? req.file.path : "";
+	if (req.files && req.files.avatar) {
+		req.body.avatar = req.files.avatar[0].path;
+	} else {
+		delete req.body.avatar;
+	}
 
 	req.body.priceAdult = req.body.priceAdult ? parseInt(req.body.priceAdult) : 0;
 	req.body.priceChildren = req.body.priceChildren
@@ -208,6 +212,12 @@ const createPost = async (req, res) => {
 		: null;
 
 	req.body.schedules = req.body.schedules ? JSON.parse(req.body.schedules) : [];
+
+	if (req.files && req.files.images && req.files.images.length > 0) {
+		req.body.images = req.files.images.map((file) => file.path);
+	} else {
+		delete req.body.images;
+	}
 
 	const newRecord = new Tour(req.body);
 	await newRecord.save();
@@ -274,8 +284,8 @@ const editPatch = async (req, res) => {
 		}
 
 		req.body.updatedBy = req.account.id;
-		if (req.file) {
-			req.body.avatar = req.file.path;
+		if (req.files && req.files.avatar) {
+			req.body.avatar = req.files.avatar[0].path;
 		} else {
 			delete req.body.avatar;
 		}
@@ -317,6 +327,12 @@ const editPatch = async (req, res) => {
 		req.body.schedules = req.body.schedules
 			? JSON.parse(req.body.schedules)
 			: [];
+
+		if (req.files && req.files.images && req.files.images) {
+			req.body.images = req.files.images.map((file) => file.path);
+		} else {
+			delete req.body.avatar;
+		}
 
 		await Tour.updateOne(
 			{

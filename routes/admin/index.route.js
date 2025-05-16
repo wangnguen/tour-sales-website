@@ -9,6 +9,7 @@ const userRoutes = require("./user.route");
 const contactRoutes = require("./contact.route");
 const settingRoutes = require("./setting.route");
 const profileRoutes = require("./profile.route");
+const uploadRoutes = require("./upload.route");
 
 const authMiddleware = require("../../middlewares/admin/auth.middleware");
 
@@ -28,6 +29,7 @@ router.use("/user", userRoutes);
 router.use("/contact", contactRoutes);
 router.use("/setting", settingRoutes);
 router.use("/profile", profileRoutes);
+router.use("/upload", uploadRoutes);
 
 router.get("*", (req, res) => {
 	res.render("admin/pages/error_404.pug", {

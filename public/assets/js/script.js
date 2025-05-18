@@ -615,7 +615,9 @@ const drawCart = () => {
 					(item) => `
           <div class="inner-tour-item">
             <div class="inner-actions">
-              <button class="inner-delete">
+              <button class="inner-delete" button-delete tour-id="${
+								item.tourId
+							}">
                 <i class="fa-solid fa-xmark"></i>
               </button>
               <input class="inner-check" type="checkbox">
@@ -754,6 +756,21 @@ const drawCart = () => {
 					});
 				});
 				// Hết sự kiện cập nhật số lượng
+
+				// Sự kiện xoá item
+				const listButtonDelete = document.querySelectorAll("[button-delete]");
+				listButtonDelete.forEach((button) => {
+					button.addEventListener("click", () => {
+						const tourId = button.getAttribute("tour-id");
+
+						const cart = JSON.parse(localStorage.getItem("cart"));
+						const indexItem = cart.findIndex((tour) => tour.tourId == tourId);
+						cart.splice(indexItem, 1);
+						localStorage.setItem("cart", JSON.stringify(cart));
+						drawCart();
+					});
+				});
+				// Hết sự kiện xoá item
 			}
 		});
 };

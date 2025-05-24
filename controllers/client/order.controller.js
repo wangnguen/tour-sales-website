@@ -85,4 +85,11 @@ const createPost = async (req, res) => {
     });
   }
 };
-module.exports = { createPost };
+
+const success = (req, res) => {
+  res.render('client/pages/order_success', {
+    pageTitle: 'Đặt hàng thành công'
+  });
+};
+
+module.exports = { createPost, success };

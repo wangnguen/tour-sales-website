@@ -1,8 +1,17 @@
+const moment = require('moment');
+
 const Order = require('../../models/order.model');
 const Tour = require('../../models/tour.model');
 
+const variableConfig = require('../../configs/variable');
+const { generateRandomNumber } = require('../../helpers/generate.helper');
+const City = require('../../models/city.model');
+
 const createPost = async (req, res) => {
   try {
+    // Mã đơn hàng
+    req.body.orderCode = 'OD' + generateRandomNumber(10);
+
     // Danh sách tour
     for (const item of req.body.items) {
       const infoTour = await Tour.findOne({
@@ -68,7 +77,6 @@ const createPost = async (req, res) => {
 
     // Trạng thái đơn hàng
     req.body.status = 'initial'; // initial: khoi tao, done: da hoan thanh, cancel: huy2
-
     const newRecord = new Order(req.body);
     await newRecord.save();
 
@@ -86,10 +94,58 @@ const createPost = async (req, res) => {
   }
 };
 
-const success = (req, res) => {
-  res.render('client/pages/order_success', {
-    pageTitle: 'Đặt hàng thành công'
-  });
+const success = async (req, res) => {
+  try {
+    const { orderId, phone } = req.query;
+
+    const orderDetail = await Order.findOne({
+      _id: orderId,
+      phone: phone
+    });
+
+    if (!orderDetail) {
+      res.redirect('/');
+      return;
+    }
+
+    orderDetail.paymentMethodName = variableConfig.paymentMethod.find(
+      (item) => item.value === orderDetail.paymentMethod
+    ).label;
+
+    orderDetail.paymentStatusName = variableConfig.paymentStatus.find(
+      (item) => item.value === orderDetail.paymentStatus
+    ).label;
+
+    orderDetail.statusName = variableConfig.orderStatus.find((item) => item.value === orderDetail.status).label;
+
+    orderDetail.createdAtFormat = moment(orderDetail.createdAt).format('HH:mm - DD/MM/YYYY');
+
+    for (const item of orderDetail.items) {
+      const infoTour = Tour.findOne({
+        _id: item.tourId,
+        deleted: false
+      });
+      if (infoTour) {
+        item.slug = infoTour.slug;
+      }
+
+      item.departureDateFormat = moment(item.departureDate).format('DD/MM/YYYY');
+
+      const city = await City.findOne({
+        _id: item.locationFrom
+      });
+      if (city) {
+        item.locationFromName = city.name;
+      }
+    }
+
+    res.render('client/pages/order_success', {
+      titlePage: 'Đặt hàng thành công',
+      orderDetail
+    });
+  } catch (error) {
+    res.redirect('/');
+  }
 };
 
 module.exports = { createPost, success };

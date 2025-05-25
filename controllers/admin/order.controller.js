@@ -1,6 +1,8 @@
 const moment = require('moment');
 
 const Order = require('../../models/order.model');
+const City = require('../../models/city.model');
+
 const variableConfig = require('../../configs/variable');
 
 const list = async (req, res) => {
@@ -33,13 +35,76 @@ const list = async (req, res) => {
   });
 };
 
-const edit = (req, res) => {
-  res.render('admin/pages/order_edit', {
-    titlePage: 'Đơn hàng: OD000001'
-  });
+const edit = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const orderDetail = await Order.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    orderDetail.createdAtFormat = moment(orderDetail.createdAt).format('YYYY-MM-DDTHH:mm');
+
+    for (const item of orderDetail.items) {
+      const city = await City.findOne({
+        _id: item.locationFrom
+      });
+      item.locationFromName = city.name;
+      item.departureDateFormat = moment(item.departureDate).format('DD/MM/YYYY');
+    }
+
+    res.render('admin/pages/order_edit', {
+      titlePage: `Đơn hàng: ${orderDetail.orderCode}`,
+      orderDetail,
+      paymentMethod: variableConfig.paymentMethod,
+      paymentStatus: variableConfig.paymentStatus,
+      orderStatus: variableConfig.orderStatus
+    });
+  } catch (error) {
+    res.redirect('/${pathAdmin}/order/list');
+  }
+};
+
+const editPatch = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const order = await Order.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if (!order) {
+      res.json({
+        code: 'error',
+        message: 'Thông tin đơn hàng không hợp lệ !'
+      });
+      return;
+    }
+
+    await Order.updateOne(
+      {
+        _id: id,
+        deleted: false
+      },
+      req.body
+    );
+    req.flash('success', 'Cập nhật đơn hàng thành công !');
+
+    res.json({
+      code: 'success'
+    });
+  } catch (error) {
+    res.json({
+      code: 'error',
+      message: 'Thông tin đơn hàng không hợp lệ !'
+    });
+  }
 };
 
 module.exports = {
   list,
-  edit
+  edit,
+  editPatch
 };

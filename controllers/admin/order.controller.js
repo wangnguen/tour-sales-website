@@ -10,6 +10,74 @@ const list = async (req, res) => {
     deleted: false
   };
 
+  // Loc theo trang thai
+  if (req.query.status) {
+    find.status = req.query.status;
+  }
+  // Het loc theo trang thai
+
+  // Loc theo ngay tao
+  const dataFilter = {};
+
+  if (req.query.startDate) {
+    const startDate = moment(req.query.startDate).startOf('date').toDate();
+    dataFilter.$gte = startDate;
+  }
+  if (req.query.endDate) {
+    const endDate = moment(req.query.endDate).endOf('date').toDate();
+    dataFilter.$lte = endDate;
+  }
+  if (Object.keys(dataFilter).length > 0) {
+    find.createdAt = dataFilter;
+  }
+  // Het loc theo ngay tao
+
+  // Loc theo phuong thuc thanh toan
+  const paymentMethod = variableConfig.paymentMethod;
+  if (req.query.paymentMethod) {
+    find.paymentMethod = req.query.paymentMethod;
+  }
+  // Het loc theo phuong thuc thanh toan
+
+  // Loc theo trang thai thanh toan
+  const paymentStatus = variableConfig.paymentStatus;
+  if (req.query.paymentStatus) {
+    find.paymentStatus = req.query.paymentStatus;
+  }
+  // Het loc theo trang thai thanh toan
+
+  // Tim kiem
+  if (req.query.keyword) {
+    const keywordRegex = new RegExp(req.query.keyword, 'i');
+    console.log(keywordRegex);
+    find.orderCode = keywordRegex;
+  }
+  // Het tim kiem
+
+  // Phân trang
+  const limitItems = 5;
+  let page = 1;
+  if (req.query.page) {
+    const currentPage = parseInt(req.query.page);
+    if (currentPage > 0) {
+      page = currentPage;
+    }
+  }
+  const totalRecord = await Order.countDocuments(find);
+  const totalPage = Math.ceil(totalRecord / limitItems);
+  if (totalPage === 0) {
+    page = 1;
+  } else if (page > totalPage) {
+    page = totalPage;
+  }
+  const skip = (page - 1) * limitItems;
+  const pagination = {
+    skip: skip,
+    totalRecord: totalRecord,
+    totalPage: totalPage
+  };
+  // Hết Phân trang
+
   const orderList = await Order.find(find).sort({
     createdAt: 'desc'
   });
@@ -31,7 +99,10 @@ const list = async (req, res) => {
 
   res.render('admin/pages/order_list', {
     titlePage: 'Quản lý đơn hàng',
-    orderList
+    orderList,
+    paymentMethod,
+    paymentStatus,
+    pagination
   });
 };
 

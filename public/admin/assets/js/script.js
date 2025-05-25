@@ -1425,6 +1425,50 @@ if (filterRole) {
 }
 // End filter role
 
+// Filter payment method
+const filterPaymentMethod = document.querySelector('[filter-payment-method]');
+if (filterPaymentMethod) {
+  const url = new URL(window.location.href);
+
+  // lang nghe thay doi lua chon
+  filterPaymentMethod.addEventListener('change', () => {
+    const value = filterPaymentMethod.value;
+    if (value) {
+      url.searchParams.set('paymentMethod', value);
+    } else {
+      url.searchParams.delete('paymentMethod');
+    }
+    window.location.href = url.href;
+  });
+  const valueCurrent = url.searchParams.get('paymentMethod');
+  if (valueCurrent) {
+    filterPaymentMethod.value = valueCurrent;
+  }
+}
+// End filter payment method
+
+// Filter payment status
+const filterPaymentStatus = document.querySelector('[filter-payment-status]');
+if (filterPaymentStatus) {
+  const url = new URL(window.location.href);
+
+  // lang nghe thay doi lua chon
+  filterPaymentStatus.addEventListener('change', () => {
+    const value = filterPaymentStatus.value;
+    if (value) {
+      url.searchParams.set('paymentStatus', value);
+    } else {
+      url.searchParams.delete('paymentStatus');
+    }
+    window.location.href = url.href;
+  });
+  const valueCurrent = url.searchParams.get('paymentStatus');
+  if (valueCurrent) {
+    filterPaymentStatus.value = valueCurrent;
+  }
+}
+// End filter payment status
+
 // Check all
 const checkAll = document.querySelector('[check-all]');
 if (checkAll) {

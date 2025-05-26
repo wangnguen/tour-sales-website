@@ -66,7 +66,7 @@ const revenueChartPost = async (req, res) => {
     deleted: false,
     createdAt: {
       $gte: new Date(currentYear, currentMonth - 1, 1),
-      $lt: new Date(currentYear, currentYear, 1)
+      $lt: new Date(currentYear, currentMonth, 1)
     }
   });
 

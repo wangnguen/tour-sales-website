@@ -44,9 +44,12 @@ const dashboard = async (req, res) => {
     deleted: false
   });
 
-  overView.totalOrder = orderList.length;
+  const orderListSection1 = await Order.find({
+    deleted: false
+  });
+  overView.totalOrder = orderListSection1.length;
 
-  overView.totalPrice = orderList.reduce((sum, item) => {
+  overView.totalPrice = orderListSection1.reduce((sum, item) => {
     return sum + item.total;
   }, 0);
   // End section 1

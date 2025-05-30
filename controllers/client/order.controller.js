@@ -147,6 +147,7 @@ const success = async (req, res) => {
       orderDetail
     });
   } catch (error) {
+    console.log(error);
     res.redirect('/');
   }
 };
@@ -175,7 +176,7 @@ const paymentZaloPay = async (req, res) => {
     };
 
     const embed_data = {
-      redirecturl: `${process.env.DOMAIN_WEBSITE}/order/success?orderId=${orderDetail.orderId}&phone=${orderDetail.phone}`
+      redirecturl: `${process.env.DOMAIN_WEBSITE}/order/success?orderId=${orderDetail.id}&phone=${orderDetail.phone}`
     };
 
     const items = [{}];
@@ -211,6 +212,7 @@ const paymentZaloPay = async (req, res) => {
     order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
     const response = await axios.post(config.endpoint, null, { params: order });
+
     if (response.data.return_code == 1) {
       res.redirect(response.data.order_url);
     } else {

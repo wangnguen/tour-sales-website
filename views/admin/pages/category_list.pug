@@ -58,6 +58,11 @@ block main
             a(
               href=`/${pathAdmin}/category/create`
             ) + Tạo mới
+        if(permissions.includes("tour-trash"))
+          .inner-button-trash
+            a(
+              href=`/${pathAdmin}/category/trash`
+            ) Thùng rác
     //- End Section 5
 
     //- Section 6

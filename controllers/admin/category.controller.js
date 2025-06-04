@@ -345,10 +345,8 @@ const trash = async (req, res) => {
     }
   }
   const totalRecord = await Category.countDocuments(find);
-  const totalPage = Math.ceil(totalRecord / limitItems);
-  if (totalPage === 0) {
-    page = 1;
-  } else if (page > totalPage) {
+  const totalPage = Math.max(Math.ceil(totalRecord / limitItems), 1);
+  if (page > totalPage) {
     page = totalPage;
   }
   const skip = (page - 1) * limitItems;

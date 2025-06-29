@@ -15,10 +15,9 @@ footer.footer
         ul
           li
             a(href="#") Trang Chủ
-          li
-            a(href="#") Tour Trong Nước
-          li
-            a(href="#") Tour Nước Ngoài
+          each item in categoryList 
+            li
+              a(href=`/category/${item.slug}`) #{item.name}
           li
             a(href="#") Tin Tức
           li
@@ -50,7 +49,7 @@ footer.footer
               )
               i.fa-brands.fa-youtube
     .inner-bottom
-      .inner-copyright © 2024 28Tech. All rights reserved.
+      .inner-copyright © 2025 wangnguen. All rights reserved.
       .inner-logo
         a(href="index.html")
           img(

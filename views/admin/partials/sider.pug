@@ -18,6 +18,9 @@ nav.sider
     if(permissions.includes("contact-view"))
       li
         a(href=`/${pathAdmin}/contact/list`) <i class="fa-solid fa-user-group"></i> Thông tin liên hệ
+    if(permissions.includes("news-view"))
+      li
+        a(href=`/${pathAdmin}/news/list`) <i class="fa-solid fa-newspaper"></i> Quản lý bài viết
   hr
   ul.inner-menu
     if(permissions.includes("general-setting"))

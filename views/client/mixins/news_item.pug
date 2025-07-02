@@ -1,0 +1,16 @@
+mixin news_item(item)
+
+  .product-item
+    .inner-image
+      a(href=`/news/detail/${item.slug}`)
+        img(
+          alt=item.name
+          src=item.avatar
+        )
+    .inner-content
+      h3.inner-title
+        a(href=`/news/detail/${item.slug}`) #{item.name}
+      .inner-desc
+        .inner-desc-item
+          | Mô tả:
+          b !{item.description}

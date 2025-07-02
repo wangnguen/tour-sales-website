@@ -1,0 +1,18 @@
+extends ../layouts/default.pug
+
+block main
+  style.
+  .container
+  // Section 10
+  .section-10
+    .container
+      .inner-info 
+        .inner-title #{newsDetail.name}
+        .inner-label
+          i.fa-regular.fa-calendar 
+          | #{newsDetail.createdAtFormat}
+        .inner-desc 
+          | !{newsDetail.description}
+
+      .box-tour-info
+        .inner-desc !{newsDetail.content}

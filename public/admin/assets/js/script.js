@@ -291,13 +291,6 @@ if (categoryCreateForm) {
             window.location.href = `/${pathAdmin}/category/list`;
           }
         });
-
-      // console.log(name);
-      // console.log(parent);
-      // console.log(position);
-      // console.log(status);
-      // console.log(avatar);
-      // console.log(description);
     });
 }
 // End Category Create Form
@@ -359,6 +352,107 @@ if (categoryEditForm) {
     });
 }
 // End Category Create Form
+
+// News Create Form
+const newsCreateForm = document.querySelector('#news-create-form');
+if (newsCreateForm) {
+  const validation = new JustValidate('#news-create-form');
+
+  validation
+    .addField('#name', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập tên bài viết!'
+      }
+    ])
+    .onSuccess((event) => {
+      const name = event.target.name.value;
+      const position = event.target.position.value;
+      const status = event.target.status.value;
+      const avatars = filePond.avatar.getFiles();
+      let avatar = null;
+      if (avatars.length > 0) {
+        avatar = avatars[0].file;
+      }
+      const description = tinymce.get('description').getContent();
+      const content = tinymce.get('content').getContent();
+      // Tạo FormData
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('position', position);
+      formData.append('status', status);
+      formData.append('avatar', avatar);
+      formData.append('description', description);
+      formData.append('content', content);
+
+      fetch(`/${pathAdmin}/news/create`, {
+        method: 'POST',
+        body: formData
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code == 'error') {
+            alert(data.message);
+          }
+
+          if (data.code == 'success') {
+            window.location.href = `/${pathAdmin}/news/list`;
+          }
+        });
+    });
+}
+// End News Create Form
+
+// News Edit Form
+const newsEditForm = document.querySelector('#news-edit-form');
+if (newsEditForm) {
+  const validation = new JustValidate('#news-edit-form');
+
+  validation
+    .addField('#name', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập tên bài viết !'
+      }
+    ])
+    .onSuccess((event) => {
+      const id = event.target.id.value;
+      const name = event.target.name.value;
+      const position = event.target.position.value;
+      const status = event.target.status.value;
+      const avatars = filePond.avatar.getFiles();
+      let avatar = null;
+      if (avatars.length > 0) {
+        avatar = avatars[0].file;
+      }
+      const description = tinymce.get('description').getContent();
+      const content = tinymce.get('content').getContent();
+      // Tạo FormData
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('position', position);
+      formData.append('status', status);
+      formData.append('avatar', avatar);
+      formData.append('description', description);
+      formData.append('content', content);
+
+      fetch(`/${pathAdmin}/news/edit/${id}`, {
+        method: 'PATCH',
+        body: formData
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code == 'error') {
+            alert(data.message);
+          }
+
+          if (data.code == 'success') {
+            window.location.reload();
+          }
+        });
+    });
+}
+// End News Edit Form
 
 // Tour Create Form
 const tourCreateForm = document.querySelector('#tour-create-form');

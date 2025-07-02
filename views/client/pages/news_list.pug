@@ -1,0 +1,64 @@
+extends ../layouts/default.pug
+include ../mixins/news_item.pug
+
+block main
+  // Section 9
+  .section-9
+    .container
+      .inner-wrap
+        .inner-left
+          // Box Filter
+          .box-filter
+            .inner-head
+              .inner-title Bộ Lọc
+              i.fa-solid.fa-filter
+            .inner-body
+              .inner-group
+                .inner-label Tìm kiếm:
+                input(
+                  type="text" 
+                  name="search" 
+                  placeholder="Nhập từ khóa tìm kiếm..."
+                  search
+                  )
+              .inner-group
+                button(search-button).inner-button Áp Dụng
+          .inner-overlay
+          // End Box Filter
+        .inner-right
+          .inner-info
+            h2.inner-title Tin Tức
+            .inner-desc
+              | Cập nhật các tin tức, bài viết mới nhất về du lịch, trải nghiệm, thông tin hữu ích...
+          .inner-info-2
+            .inner-count-record
+              | Tất cả: 
+              b #{news.length} Bài viết
+            button.inner-filter-mobile
+              span.inner-title Bộ Lọc
+              i.fa-solid.fa-filter
+          .inner-list-tour
+            each item in news
+              // News Item
+              +news_item(item)
+              // End News Item
+          // Pagination
+          .box-pagination
+            div(data-total-page=pagination.totalPage style="display: none")
+            .box-pagination
+            //- Nút <<
+            button(data-page="prev" disabled=pagination.currentPage === 1)
+              i.fa-solid.fa-angles-left
+
+            //- Hiển thị dải nút trong cửa sổ
+            - for (let i = pagination.startPage; i <= pagination.endPage; i++)
+              button(
+                data-page=i,
+                class=i === pagination.currentPage ? 'active' : ''
+              ) #{i}
+
+            //- Nút >>
+            button(data-page="next" disabled=pagination.currentPage === pagination.totalPage)
+              i.fa-solid.fa-angles-right
+          // End Pagination
+  // End Section 9

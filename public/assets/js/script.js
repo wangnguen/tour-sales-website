@@ -835,3 +835,52 @@ if (pageCart) {
   drawCart();
 }
 // End Page Cart
+
+// Search
+const search = document.querySelector('[search]');
+const searchButton = document.querySelector('[search-button]');
+if (searchButton) {
+  const url = new URL(window.location.href);
+  // lang nghe phim dang go
+  searchButton.addEventListener('click', () => {
+    const value = search.value;
+    if (value) {
+      url.searchParams.set('keyword', value.trim());
+    } else {
+      url.searchParams.delete('keyword');
+    }
+    window.location.href = url.href;
+  });
+  // hien thi mac dinh
+  const valueCurrent = url.searchParams.get('keyword');
+  if (valueCurrent) {
+    search.value = valueCurrent;
+  }
+}
+// End search
+
+// Pagination
+document.addEventListener('DOMContentLoaded', () => {
+  const buttons = document.querySelectorAll('[data-page]');
+  const url = new URL(window.location.href);
+  const currentPage = parseInt(url.searchParams.get('page')) || 1;
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = button.dataset.page;
+      let page = currentPage;
+
+      if (target === 'prev') {
+        page = Math.max(currentPage - 1, 1);
+      } else if (target === 'next') {
+        page = currentPage + 1;
+      } else {
+        page = parseInt(target);
+      }
+
+      url.searchParams.set('page', page);
+      window.location.href = url.href;
+    });
+  });
+});
+// End Pagination

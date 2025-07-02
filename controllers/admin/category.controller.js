@@ -59,9 +59,7 @@ const list = async (req, res) => {
   }
   const totalRecord = await Category.countDocuments(find);
   const totalPage = Math.max(Math.ceil(totalRecord / limitItems), 1);
-  if (totalPage === 0) {
-    page = 1;
-  } else if (page > totalPage) {
+  if (page > totalPage) {
     page = totalPage;
   }
   const skip = (page - 1) * limitItems;
@@ -116,8 +114,6 @@ const create = async (req, res) => {
 
   const categoryTree = categoryHelper.buildCategoryTree(categoryList);
 
-  // console.log(categoryTree);
-
   res.render('admin/pages/category_create', {
     titlePage: 'Tạo danh mục',
     categoryList: categoryTree
@@ -143,7 +139,6 @@ const createPost = async (req, res) => {
   req.body.createdBy = req.account.id;
   req.body.updatedBy = req.account.id;
   req.body.avatar = req.file ? req.file.path : '';
-  // console.log(req.file);
 
   const newRecord = new Category(req.body);
   await newRecord.save();
@@ -226,7 +221,7 @@ const editPatch = async (req, res) => {
   } catch (error) {
     res.json({
       code: 'error',
-      message: 'Id is invalid !'
+      message: 'Id không hợp lệ !'
     });
   }
 };
@@ -314,7 +309,7 @@ const changeMultiPatch = async (req, res) => {
   } catch (error) {
     res.json({
       code: 'error',
-      message: 'Id không tồn tại trong hệ thống !'
+      message: 'Id không hợp lệ !'
     });
   }
 };
@@ -391,7 +386,7 @@ const trash = async (req, res) => {
 };
 
 const undoPatch = async (req, res) => {
-  if (!req.permissions.includes('tour-trash')) {
+  if (!req.permissions.includes('category-trash')) {
     res.json({
       code: 'error',
       message: 'Không có quyến sử dụng tính năng này !'
@@ -422,7 +417,7 @@ const undoPatch = async (req, res) => {
 };
 
 const deleteDestroyPatch = async (req, res) => {
-  if (!req.permissions.includes('tour-trash')) {
+  if (!req.permissions.includes('category-trash')) {
     res.json({
       code: 'error',
       message: 'Không có quyến sử dụng tính năng này !'
@@ -450,7 +445,7 @@ const deleteDestroyPatch = async (req, res) => {
 };
 
 const trashChangeMultiPatch = async (req, res) => {
-  if (!req.permissions.includes('tour-trash')) {
+  if (!req.permissions.includes('category-trash')) {
     res.json({
       code: 'error',
       message: 'Không có quyến sử dụng tính năng này !'

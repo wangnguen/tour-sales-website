@@ -15,7 +15,7 @@ mixin product_item(item)
       h3.inner-title
         a(href=`/tour/detail/${item.slug}`) #{item.name}
       .inner-prices
-        if(item.discount > 0)
+        if(discount > 0)
           .inner-price-old
             | #{item.priceAdult.toLocaleString("vi-VN")}
             span.inner-unit đ
@@ -23,9 +23,9 @@ mixin product_item(item)
           | #{item.priceNewAdult.toLocaleString("vi-VN")}
           span.inner-unit đ
       .inner-desc
-        //- .inner-desc-item
-        //-   | Mã Tour:
-        //-   b #{item.code}
+        .inner-desc-item
+          | Mã Tour:
+          b #{item.code}
         .inner-desc-item
           | Ngày Khởi Hành:
           b #{item.departureDateFormat}

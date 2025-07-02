@@ -8,6 +8,7 @@ const Tour = require('../../models/tour.model');
 const AccountAdmin = require('../../models/admin_account.model');
 
 const categoryHelper = require('../../helpers/category.helper');
+const { generateRandomNumber } = require('../../helpers/generate.helper');
 
 const list = async (req, res) => {
   const find = {
@@ -202,6 +203,9 @@ const createPost = async (req, res) => {
   } else {
     delete req.body.images;
   }
+
+  // create code
+  req.body.code = generateRandomNumber(6);
 
   const newRecord = new Tour(req.body);
   await newRecord.save();

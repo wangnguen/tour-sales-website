@@ -1981,6 +1981,13 @@ textarea {
   margin-right: 16px;
 }
 
+.section-10 .inner-desc img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+}
+
 @media (max-width: 991.98px) {
   .section-10 .inner-wrap {
     flex-wrap: wrap;

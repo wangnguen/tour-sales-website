@@ -1,4 +1,5 @@
 extends ../layouts/default.pug
+include ../mixins/paginations.pug
 
 block main
   if(permissions.includes("category-view"))
@@ -116,10 +117,5 @@ block main
     //- End Section 6
 
     //- Section 7
-    .section-7
-      span.inner-label Hiển thị #{pagination.skip + 1} - #{pagination.skip + categoryList.length} của #{pagination.totalRecord}
-
-      select(class="inner-pagination" pagination)
-        - for (let i = 1; i <= pagination.totalPage; i++)
-          option(value=i) Trang #{i}
+    +paginations(pagination, categoryList)
     //- End Section 7

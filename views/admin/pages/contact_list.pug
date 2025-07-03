@@ -1,5 +1,5 @@
 extends ../layouts/default.pug
-
+include ../mixins/paginations.pug
 block main
   h1.box-title Thông tin liên hệ
 
@@ -59,10 +59,5 @@ block main
   //- End Section 6
 
   //- Section 7
-  .section-7
-    span(class="inner-label") Hiển thị 1 - 9 của 78
-    select(class="inner-pagination")
-      option Trang 1
-      option Trang 2
-      option Trang 3
+  +paginations(pagination, contactList)
   //- End Section 7

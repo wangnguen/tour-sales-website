@@ -1,5 +1,5 @@
 extends ../layouts/default.pug
-
+include ../mixins/paginations.pug
 block main
   if(permissions.includes("account-admin-view"))
     h1.box-title Tài khoản quản trị
@@ -115,10 +115,5 @@ block main
     //- End Section 6
 
     //- Section 7
-    .section-7
-      span(class="inner-label") Hiển thị #{pagination.skip + 1} - #{pagination.skip + accountAdminList.length} của #{pagination.totalRecord}
-      select(class="inner-pagination" pagination)
-        - for (let i = 1; i <= pagination.totalPage; i++)
-          option(value=i) Trang #{i}
-
+    +paginations(pagination, accountAdminList)
     //- End Section 7

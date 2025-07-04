@@ -24,13 +24,8 @@ const list = async (req, res) => {
 
   // Tim kiem
   if (req.query.keyword) {
-    const keyword = slugify(req.query.keyword, {
-      lower: true,
-      locale: 'vi'
-    });
-    const keywordRegex = new RegExp(keyword, 'i');
-
-    find.slug = keywordRegex;
+    const keywordRegex = new RegExp(req.query.keyword, 'i');
+    find.email = keywordRegex;
   }
   // Het tim kiem
 
@@ -74,6 +69,77 @@ const list = async (req, res) => {
   });
 };
 
+const changeMultiPatch = async (req, res) => {
+  try {
+    const { option, ids } = req.body;
+    switch (option) {
+      case 'delete':
+        if (!req.permissions.includes('contact-delete')) {
+          res.json({
+            code: 'error',
+            message: 'Không có quyền sử dụng tính năng này !'
+          });
+          return;
+        }
+        await Contact.updateMany(
+          {
+            _id: { $in: ids }
+          },
+          {
+            deleted: true,
+            deletedBy: req.account.id,
+            deletedAt: Date.now()
+          }
+        );
+        req.flash('success', 'Xoá liên lạc thành công !');
+        break;
+    }
+    res.json({
+      code: 'success'
+    });
+  } catch (error) {
+    res.json({
+      code: 'error',
+      message: 'Id không hợp lệ !'
+    });
+  }
+};
+
+const deletePatch = async (req, res) => {
+  if (!req.permissions.includes('contact-delete')) {
+    res.json({
+      code: 'error',
+      message: 'Không có quyền sử dụng tính năng này !'
+    });
+    return;
+  }
+
+  try {
+    const id = req.params.id;
+    await Contact.updateOne(
+      {
+        _id: id
+      },
+      {
+        deleted: true,
+        deletedBy: req.account.id,
+        deletedAt: Date.now()
+      }
+    );
+    req.flash('success', 'Xoá liên lạc thành công');
+    res.json({
+      code: 'success'
+    });
+  } catch (error) {
+    res.json({
+      code: 'error',
+      message: 'Không có quyền sử dụng tính năng này !'
+    });
+  }
+};
+
 module.exports = {
-  list
+  list,
+  changeMultiPatch,
+  deletePatch
 };

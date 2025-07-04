@@ -9,26 +9,30 @@ block main
       .inner-item.inner-label
         <i class="fa-solid fa-filter"></i> Bộ lọc
       .inner-item.inner-date
-        input(type="date")
+        input(type="date" filter-start-date)
         span -
-        input(type="date")
-      .inner-item.inner-reset
+        input(type="date" filter-end-date)
+      .inner-item.inner-reset(filter-reset)
         <i class="fa-solid fa-rotate-left"></i> Xóa bộ lọc
   //- End Section 4
 
   //- Section 5
   .section-5
     .inner-wrap
-      .inner-change-status
+      .inner-change-status(
+        change-multi
+        data-api=`/${pathAdmin}/contact/change-multi`
+      )
         .inner-item
           select
             option(value="") -- Hành động --
-            option(value="") Xóa
+            if(permissions.includes("contact-delete"))
+              option(value="delete") Xóa
         .inner-item
           button Áp dụng
       .inner-search
         <i class="fa-solid fa-magnifying-glass"></i>
-        input(type="text" placeholder="Tìm kiếm")
+        input(type="text" placeholder="Tìm kiếm" search)
   //- End Section 5
 
   //- Section 6
@@ -50,12 +54,13 @@ block main
               td #{item.email}
               td #{item.createdAtFormat}
               td(class="inner-center")
-                .inner-buttons
-                  button(
-                    button-delete
-                    data-api=`/${pathAdmin}/contact/delete/${item.id}`
-                    class="inner-delete"
-                  ) <i class="fa-regular fa-trash-can"></i>
+                if(permissions.includes("contact-delete"))
+                  .inner-buttons
+                    button(
+                      button-delete
+                      data-api=`/${pathAdmin}/contact/delete/${item.id}`
+                      class="inner-delete"
+                    ) <i class="fa-regular fa-trash-can"></i>
   //- End Section 6
 
   //- Section 7

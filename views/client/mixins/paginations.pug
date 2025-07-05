@@ -1,0 +1,18 @@
+mixin paginations(pagination)
+  .box-pagination
+    div(data-total-page=pagination.totalPage style="display: none")
+    .box-pagination
+    //- Nút <<
+    button(data-page="prev" disabled=pagination.currentPage === 1)
+      i.fa-solid.fa-angles-left
+
+    //- Hiển thị dải nút trong cửa sổ
+    - for (let i = pagination.startPage; i <= pagination.endPage; i++)
+      button(
+        data-page=i,
+        class=i === pagination.currentPage ? 'active' : ''
+      ) #{i}
+
+    //- Nút >>
+    button(data-page="next" disabled=pagination.currentPage === pagination.totalPage)
+      i.fa-solid.fa-angles-right

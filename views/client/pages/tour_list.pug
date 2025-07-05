@@ -1,7 +1,7 @@
 extends ../layouts/default.pug
 include ../mixins/box_breadcrumb.pug
 include ../mixins/product_item.pug
-
+include ../mixins/paginations.pug
 block main
   // Breadcrumb
   +box_breadcrumb(breadcrumb)
@@ -104,14 +104,6 @@ block main
               +product_item(item)
               // End Product item
           // Pagination
-          .box-pagination
-            button
-              i.fa-solid.fa-angles-left
-            button.active 1
-            button 2
-            button 3
-            button 4
-            button
-              i.fa-solid.fa-angles-right
+          +paginations(pagination)
           // End Pagination
   // End Section 9

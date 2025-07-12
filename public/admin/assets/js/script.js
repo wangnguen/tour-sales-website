@@ -492,14 +492,6 @@ if (tourCreateForm) {
       const information = tinymce.get('information').getContent();
       const schedules = [];
 
-      // images
-      if (filePondMulti.images.getFiles().length > 0) {
-        filePondMulti.images.getFiles().forEach((item) => {
-          formData.append('images', item.file);
-        });
-      }
-      // End images
-
       // locations
       const listElementLocation = tourCreateForm.querySelectorAll('input[name="locations"]:checked');
       listElementLocation.forEach((input) => {
@@ -524,27 +516,6 @@ if (tourCreateForm) {
       });
       // End schedules
 
-      // console.log(name);
-      // console.log(category);
-      // console.log(position);
-      // console.log(status);
-      // console.log(avatar);
-      // console.log(priceAdult);
-      // console.log(priceChildren);
-      // console.log(priceBaby);
-      // console.log(priceNewAdult);
-      // console.log(priceNewChildren);
-      // console.log(priceNewBaby);
-      // console.log(stockAdult);
-      // console.log(stockChildren);
-      // console.log(stockBaby);
-      // console.log(locations);
-      // console.log(time);
-      // console.log(vehicle);
-      // console.log(departureDate);
-      // console.log(information);
-      // console.log(schedules);
-
       // Tạo formData
       const formData = new FormData();
       formData.append('name', name);
@@ -567,6 +538,14 @@ if (tourCreateForm) {
       formData.append('departureDate', departureDate);
       formData.append('information', information);
       formData.append('schedules', JSON.stringify(schedules));
+      // images
+      if (filePondMulti.images.getFiles().length > 0) {
+        filePondMulti.images.getFiles().forEach((item) => {
+          formData.append('images', item.file);
+        });
+      }
+      // End images
+
       fetch(`/${pathAdmin}/tour/create`, {
         method: 'POST',
         body: formData

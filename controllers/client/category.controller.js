@@ -53,9 +53,9 @@ const list = async (req, res) => {
 
     // End breadcrumb
 
-    // Danh sách tour
-
+    // Danh sách danh mục con
     const listCategoryId = await categoryHelper.getAllSubcategoryIds(category.id);
+
     const find = {
       category: { $in: listCategoryId },
       deleted: false,
@@ -98,13 +98,35 @@ const list = async (req, res) => {
     };
     // Het phan trang
 
-    const totalTour = await Tour.countDocuments(find);
-    const tourList = await Tour.find(find)
-      .sort({
-        position: 'desc'
-      })
-      .skip(skip)
-      .limit(limitItems);
+    // Sap xep
+    let sortOption = {};
+    const sortQuery = req.query.sort || '';
+    switch (sortQuery) {
+      case 'price-asc':
+        sortOption = { priceNewAdult: 'asc' };
+        break;
+      case 'price-desc':
+        sortOption = { priceNewAdult: 'desc' };
+        break;
+      default:
+        sortOption = { position: 'asc' };
+        break;
+    }
+    let tourList;
+
+    if (sortQuery === 'discount') {
+      const allTours = await Tour.find(find).skip(skip).limit(limitItems);
+
+      tourList = allTours
+        .map((t) => {
+          const discountRate = t.priceAdult && t.priceNewAdult ? (t.priceAdult - t.priceNewAdult) / t.priceAdult : 0;
+          return { ...t.toObject(), discountRate };
+        })
+        .sort((a, b) => b.discountRate - a.discountRate);
+    } else {
+      tourList = await Tour.find(find).sort(sortOption).skip(skip).limit(limitItems);
+    }
+    // Het sap xep
 
     for (const item of tourList) {
       item.departureDateFormat = moment(item.departureDate).format('DD/MM/YYYY');
@@ -114,13 +136,12 @@ const list = async (req, res) => {
     // Danh sách thành phố
     const cityList = await City.find({});
     // Hết Danh sách thành phố
-
     res.render('client/pages/tour_list', {
       titlePage: 'Danh sách tour',
       breadcrumb: breadcrumb,
       category: category,
       tourList: tourList,
-      totalTour: totalTour,
+      totalTour: pagination.totalRecord,
       cityList: cityList,
       pagination
     });

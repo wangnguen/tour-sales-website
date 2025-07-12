@@ -884,3 +884,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // End Pagination
+
+// Sort
+document.addEventListener('DOMContentLoaded', () => {
+  const sortButtons = document.querySelectorAll('[sort-button]');
+  if (!sortButtons.length) return;
+
+  const url = new URL(window.location.href);
+  sortButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const sortValue = button.getAttribute('sort-value');
+
+      if (sortValue) {
+        url.searchParams.set('sort', sortValue);
+        url.searchParams.set('page', 1); // reset về trang 1 khi sort
+      } else {
+        url.searchParams.delete('sort');
+      }
+
+      window.location.href = url.toString();
+    });
+  });
+});
+// End Sort

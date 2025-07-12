@@ -80,21 +80,21 @@ block main
             .inner-sort
               .inner-label Sắp xếp:
               .inner-list
-                button
+                button(sort-button sort-value="price-asc" class=sort == 'price-asc' ? 'active' : '') 
                   | Giá tăng dần
                   i.fa-solid.fa-square-caret-up
-                button
+                button(sort-button sort-value="price-desc" class=sort == 'price-desc' ? 'active' : '') 
                   | Giá giảm dần
                   i.fa-solid.fa-square-caret-down
-                button.active
+                button(sort-button sort-value="discount" class=sort == 'discount' ? 'active' : '') 
                   | Khuyến Mại Hot
                   i.fa-solid.fa-tag
-                button
-                  | Xem Nhiều
-                  i.fa-solid.fa-eye
+                //- button(sort-button sort-value="view" class=sort == 'view' ? 'active' : '') 
+                //-   | Xem Nhiều
+                //-   i.fa-solid.fa-eye
             .inner-count-record
-              | Tất cả:
-              b #{totalTour} Tour
+              | Tất cả: 
+              b #{pagination.totalRecord} Tour
             button.inner-filter-mobile
               span.inner-title Bộ Lọc
               i.fa-solid.fa-filter

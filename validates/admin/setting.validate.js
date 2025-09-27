@@ -1,135 +1,97 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const websiteInfoPatch = (req, res, next) => {
-	const schema = Joi.object({
-		websiteName: Joi.string().required().messages({
-			"string.empty": "Vui lòng nhập tên website!",
-		}),
-		email: Joi.string().email().messages({
-			"string.empty": "Vui lòng nhập email",
-			"string.email": "Email không đúng định dạng!",
-		}),
+  const schema = Joi.object({
+    websiteName: Joi.string().required().messages({
+      'string.empty': 'Vui lòng nhập tên website!'
+    }),
+    email: Joi.string().email().messages({
+      'string.empty': 'Vui lòng nhập email',
+      'string.email': 'Email không đúng định dạng!'
+    }),
 
-		phone: Joi.string().allow(""),
-		address: Joi.string().allow(""),
-		logo: Joi.string().allow(""),
-		favicon: Joi.string().allow(""),
-	});
+    phone: Joi.string().allow(''),
+    address: Joi.string().allow(''),
+    logo: Joi.string().allow(''),
+    favicon: Joi.string().allow('')
+  });
 
-	const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body);
 
-	if (error) {
-		const errorMessage = error.details[0].message;
+  if (error) {
+    const errorMessage = error.details[0].message;
 
-		// console.log(error);
-		res.json({
-			code: "error",
-			message: errorMessage,
-		});
-		return;
-	}
+    // console.log(error);
+    res.json({
+      code: 'error',
+      message: errorMessage
+    });
+    return;
+  }
 
-	next();
+  next();
 };
 
 const accountAdminCreatePost = (req, res, next) => {
-	const schema = Joi.object({
-		fullName: Joi.string().required().min(5).max(50).messages({
-			"string.empty": "Vui lòng nhập họ tên",
-			"string.min": "Họ tên phải có ít nhất 5 ký tự!",
-			"string.max": "Họ tên không được vượt quá 50 ký tự!",
-		}),
-		email: Joi.string().required().email().messages({
-			"string.empty": "Vui lòng nhập email",
-			"string.email": "Email không đúng định dạng!",
-		}),
-		phone: Joi.string()
-			.required()
-			.custom((value, helpers) => {
-				if (!/(84|0[3|5|7|8|9])+([0-9]{8})\b/g.test(value)) {
-					return helpers.error("password.incorrectFormat");
-				}
-				return value;
-			})
-			.messages({
-				"string.empty": "Vui lòng nhập số điện thoại!",
-				"password.incorrectFormat": "Số điện thoại không đúng định dạng!",
-			}),
-		positionCompany: Joi.string().required().messages({
-			"string.empty": "Vui lòng nhập chức vụ!",
-		}),
-		password: Joi.string()
-			.required()
-			.min(8)
-			.custom((value, helpers) => {
-				if (!/[A-Z]/.test(value)) {
-					return helpers.error("password.uppercase");
-				}
-				if (!/[a-z]/.test(value)) {
-					return helpers.error("password.lowercase");
-				}
-				if (!/\d/.test(value)) {
-					return helpers.error("password.digit");
-				}
-				if (!/[@$!%*?&]/.test(value)) {
-					return helpers.error("password.special");
-				}
-				return value;
-			})
-			.messages({
-				"string.empty": "Vui lòng nhập mật khẩu",
-				"string.min": "Mật khẩu phải chứa ít nhất 8 ký tự!",
-				"password.uppercase": "Mật khẩu phải chứa ít nhất một chữ cái in hoa!",
-				"password.lowercase": "Mật khẩu phải chứa ít nhất một chữ cái thường!",
-				"password.digit": "Mật khẩu phải chứa ít nhất một chữ số!",
-				"password.special": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt!",
-			}),
-		role: Joi.string().allow(""),
-		status: Joi.string().allow(""),
-		avatar: Joi.string().allow(""),
-	});
+  const schema = Joi.object({
+    fullName: Joi.string().required().min(5).max(50).messages({
+      'string.empty': 'Vui lòng nhập họ tên',
+      'string.min': 'Họ tên phải có ít nhất 5 ký tự!',
+      'string.max': 'Họ tên không được vượt quá 50 ký tự!'
+    }),
+    email: Joi.string().required().email().messages({
+      'string.empty': 'Vui lòng nhập email',
+      'string.email': 'Email không đúng định dạng!'
+    }),
+    phone: Joi.string().allow(''),
+    positionCompany: Joi.string().allow(''),
+    password: Joi.string().allow(''),
+    role: Joi.string().allow(''),
+    status: Joi.string().allow(''),
+    avatar: Joi.string().allow('')
+  });
 
-	const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body);
 
-	if (error) {
-		const errorMessage = error.details[0].message;
+  if (error) {
+    const errorMessage = error.details[0].message;
 
-		// console.log(error);
-		res.json({
-			code: "error",
-			message: errorMessage,
-		});
-		return;
-	}
+    // console.log(error);
+    res.json({
+      code: 'error',
+      message: errorMessage
+    });
+    return;
+  }
 
-	next();
+  next();
 };
 
 const roleCreatePost = (req, res, next) => {
-	const schema = Joi.object({
-		name: Joi.string().required().messages({
-			"string.empty": "Vui lòng nhập tên nhóm quyền!",
-		}),
-		description: Joi.string().allow(""),
-		permissions: Joi.array().optional(),
-	});
+  const schema = Joi.object({
+    name: Joi.string().required().messages({
+      'string.empty': 'Vui lòng nhập tên nhóm quyền!'
+    }),
+    description: Joi.string().allow(''),
+    permissions: Joi.array().optional()
+  });
 
-	const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body);
 
-	if (error) {
-		const errorMessage = error.details[0].message;
+  if (error) {
+    const errorMessage = error.details[0].message;
 
-		res.json({
-			code: "error",
-			message: errorMessage,
-		});
-		return;
-	}
-	next();
+    res.json({
+      code: 'error',
+      message: errorMessage
+    });
+    return;
+  }
+  next();
 };
 
 module.exports = {
-	websiteInfoPatch,
-	accountAdminCreatePost,
-	roleCreatePost,
+  websiteInfoPatch,
+  accountAdminCreatePost,
+  roleCreatePost
 };

@@ -946,7 +946,6 @@ if (settingAccountAdminCreateForm) {
 const settingAccountAdminEditForm = document.querySelector('#setting-account-admin-edit-form');
 if (settingAccountAdminEditForm) {
   const validation = new JustValidate('#setting-account-admin-edit-form');
-
   validation
     .addField('#fullName', [
       {
@@ -972,41 +971,6 @@ if (settingAccountAdminEditForm) {
       {
         rule: 'email',
         errorMessage: 'Email không đúng định dạng!'
-      }
-    ])
-    .addField('#phone', [
-      {
-        rule: 'customRegexp',
-        value: /(84|0[3|5|7|8|9])+([0-9]{8})\b/g,
-        errorMessage: 'Số điện thoại không đúng định dạng!'
-      }
-    ])
-    .addField('#positionCompany', [
-      {
-        rule: 'required',
-        errorMessage: 'Vui lòng nhập chức vụ!'
-      }
-    ])
-    .addField('#password', [
-      {
-        validator: (value) => (value ? value.length >= 8 : true),
-        errorMessage: 'Mật khẩu phải chứa ít nhất 8 ký tự!'
-      },
-      {
-        validator: (value) => (value ? /[A-Z]/.test(value) : true),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ cái in hoa!'
-      },
-      {
-        validator: (value) => (value ? /[a-z]/.test(value) : true),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ cái thường!'
-      },
-      {
-        validator: (value) => (value ? /\d/.test(value) : true),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một chữ số!'
-      },
-      {
-        validator: (value) => (value ? /[@$!%*?&]/.test(value) : true),
-        errorMessage: 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt!'
       }
     ])
     .onSuccess((event) => {

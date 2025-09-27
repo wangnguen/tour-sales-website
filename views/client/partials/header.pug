@@ -43,18 +43,26 @@ header.header
                   each itemChild in item.children
                     li
                       a(href=`/category/${itemChild.slug}`) #{itemChild.name}
-                  
           li
             a(href="/news") Tin tức
           li
             a(href="/contact") Liên hệ
         .inner-overlay
-      // Cart
-      .inner-cart
-        a(href="/cart")
-          img(
-            alt="Cart" 
-            src="/assets/images/icon-cart.svg"
+      // Actions
+      .inner-actions
+        .inner-user
+          a(href="/login")
+            img(
+              alt="User" 
+              src="/assets/images/icon-user.svg"
             )
-          span(mini-cart) 0
+        .inner-cart
+          a(href="/cart")
+            img(
+              alt="Cart" 
+              src="/assets/images/icon-cart.svg"
+            )
+            span(mini-cart) 0
+      // End Actions
+
 // End Header

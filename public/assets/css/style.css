@@ -201,6 +201,27 @@ textarea {
   top: 5.5px;
 }
 
+/* Group user + cart */
+.header .inner-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* chỉnh khoảng cách giữa user và cart */
+}
+
+/* User */
+.header .inner-user a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.header .inner-user img {
+  height: 26px;
+  width: auto;
+}
+
 .header .inner-menu-mobile {
   display: none;
 }

@@ -959,3 +959,235 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 // End logout
+
+// Profile Edit Form
+// File JS cập nhật (giả sử đặt trong script tag cuối body hoặc file riêng)
+document.addEventListener('DOMContentLoaded', function() {
+  const profileEditForm = document.querySelector('#profile-edit-form');
+  if (!profileEditForm) return;
+
+  // Khởi tạo FilePond nếu có (giả sử đã load lib FilePond qua CDN hoặc bundle)
+  let filePondInstance = null;
+  const avatarInput = document.getElementById('avatar');
+  const uploadContainer = document.querySelector('.inner-upload-image');
+  const previewImg = document.querySelector('.upload-image-preview');
+  const placeholder = document.querySelector('.upload-image-placeholder');
+  const imageDefault = uploadContainer.getAttribute('image-default') || '';
+
+  // Init FilePond nếu lib có sẵn
+  if (typeof FilePond !== 'undefined' && avatarInput) {
+    FilePond.registerPlugin(
+      FilePondPluginImagePreview,
+      FilePondPluginFileValidateSize,
+      FilePondPluginFileValidateType
+    );
+
+    filePondInstance = FilePond.create(avatarInput, {
+      imagePreviewHeight: 120,
+      imageCropAspectRatio: 1, // Crop vuông cho avatar tròn
+      imageResizeMode: 'contain',
+      imagePreviewMinHeight: 120,
+      imagePreviewMaxHeight: 120,
+      maxFileSize: '5MB',
+      acceptedFileTypes: ['image/jpeg', 'image/png'],
+      labelButtonAbortItemLoad: 'Hủy...',
+      labelButtonAbortItemProcessing: 'Hủy...',
+      labelButtonProcessItem: 'Tải lên...',
+      labelButtonRemoveItem: 'Xóa...',
+      labelButtonRetryItemLoad: 'Thử lại...',
+      labelButtonRetryItemProcessing: 'Thử lại...',
+      labelButtonWait: 'Chờ...',
+      labelFileLoading: 'Đang tải...',
+      labelFileLoadError: 'Lỗi tải...',
+      labelFileProcessing: 'Đang xử lý...',
+      labelFileProcessingAborted: 'Đã hủy...',
+      labelFileProcessingComplete: 'Hoàn tất...',
+      labelFileProcessingError: 'Lỗi xử lý...',
+      labelFileProcessingRevertError: 'Lỗi hoàn tác...',
+      labelFileRemoveError: 'Lỗi xóa...',
+      labelFileSizeNotAvailable: 'Kích thước không có...',
+      labelFileWaitingForSize: 'Chờ kích thước...',
+      labelIdle: 'Kéo thả ảnh hoặc <span class="filepond--label-action">chọn file</span>...',
+      labelInvalidField: 'Trường chứa file không hợp lệ...',
+      labelTapToCancel: 'Nhấn để hủy...',
+      labelTapToRetry: 'Nhấn để thử lại...',
+      labelTapToSelect: 'Nhấn để chọn...',
+      labelFileValidateSize: 'File quá lớn! Tối đa 5MB.',
+      labelFileValidateType: 'Loại file không hỗ trợ! Chỉ JPG/PNG.',
+      // Xử lý server nếu cần upload ngay, nhưng ở đây chỉ client preview
+      server: {
+        load: null, // Không load server file, vì preview riêng
+        process: null, // Upload khi submit
+      },
+      // Thêm existing file nếu có avatar cũ (giả lập để preview trong FilePond)
+      files: imageDefault ? [{
+        source: imageDefault,
+        options: { type: 'local' }
+      }] : []
+    });
+
+    // Ẩn preview riêng nếu FilePond handle
+    if (previewImg) previewImg.style.display = 'none';
+    if (placeholder) placeholder.style.display = 'none';
+  } else {
+    // Fallback nếu không có FilePond: JS thuần cho preview
+    if (avatarInput) {
+      avatarInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          // Validate
+          if (file.size > 5 * 1024 * 1024) {
+            alert('File quá lớn! Tối đa 5MB.');
+            avatarInput.value = '';
+            return;
+          }
+          if (!file.type.startsWith('image/') || (!file.type.includes('jpeg') && !file.type.includes('png'))) {
+            alert('Chỉ hỗ trợ JPG/PNG!');
+            avatarInput.value = '';
+            return;
+          }
+          // Preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            if (previewImg) {
+              previewImg.src = e.target.result;
+              previewImg.style.display = 'block';
+            } else {
+              // Tạo nếu chưa có
+              const img = document.createElement('img');
+              img.className = 'upload-image-preview';
+              img.src = e.target.result;
+              img.alt = 'Preview';
+              uploadContainer.appendChild(img);
+            }
+            if (placeholder) placeholder.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    // Click container để select file
+    if (uploadContainer) {
+      uploadContainer.addEventListener('click', function(e) {
+        if (e.target !== avatarInput) {
+          avatarInput.click();
+        }
+      });
+    }
+  }
+
+  // Validation với JustValidate (thêm address nếu cần required)
+  const validation = new JustValidate('#profile-edit-form', {
+    errorLabelCssClass: 'error-label',
+    errorFieldCssClass: 'error-field',
+    successLabelCssClass: 'success-label',
+    successFieldCssClass: 'success-field'
+  });
+
+  validation
+    .addField('#fullName', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập họ tên!'
+      },
+      {
+        rule: 'minLength',
+        value: 5,
+        errorMessage: 'Họ tên phải có ít nhất 5 ký tự!'
+      },
+      {
+        rule: 'maxLength',
+        value: 50,
+        errorMessage: 'Họ tên không được vượt quá 50 ký tự!'
+      }
+    ])
+    .addField('#email', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập email!'
+      },
+      {
+        rule: 'email',
+        errorMessage: 'Email không đúng định dạng!'
+      }
+    ])
+    .addField('#phone', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập số điện thoại!'
+      },
+      {
+        rule: 'customRegexp',
+        value: /(84|0[3|5|7|8|9])+([0-9]{8})\b/g,
+        errorMessage: 'Số điện thoại không đúng định dạng!'
+      }
+    ])
+    // Thêm validation cho address nếu cần (optional, không required)
+    .addField('#address', [
+      {
+        rule: 'maxLength',
+        value: 200,
+        errorMessage: 'Địa chỉ không được vượt quá 200 ký tự!'
+      }
+    ]);
+
+  validation.onSuccess((event) => {
+    event.preventDefault(); // Ngăn submit mặc định
+
+    const fullName = event.target.fullName.value.trim();
+    const email = event.target.email.value.trim();
+    const phone = event.target.phone.value.trim();
+    const address = event.target.address.value.trim();
+
+    let avatar = null;
+    if (filePondInstance) {
+      // FilePond instance (lưu ý: tên instance là filePondInstance, không phải filePond.avatar)
+      const files = filePondInstance.getFiles();
+      if (files.length > 0) {
+        const selectedFile = files[0];
+        // Kiểm tra nếu là file cũ (không thay đổi)
+        const isDefault = imageDefault && selectedFile.file.name === decodeURIComponent(imageDefault.split('/').pop());
+        if (!isDefault) {
+          avatar = selectedFile.file;
+        }
+      }
+    } else if (avatarInput.files && avatarInput.files[0]) {
+      // Fallback: kiểm tra nếu không phải default (dựa tên file hoặc size)
+      avatar = avatarInput.files[0];
+      if (imageDefault && avatar.name === 'default-avatar.jpg') { // Giả sử tên default, điều chỉnh theo backend
+        avatar = null;
+      }
+    }
+
+    // Tạo FormData
+    const formData = new FormData();
+    formData.append('fullName', fullName);
+    formData.append('email', email);
+    formData.append('phone', phone);
+    formData.append('address', address);
+    if (avatar) {
+      formData.append('avatar', avatar);
+    }
+
+    // Fetch submit
+    fetch(`/user/profile/edit`, { // Sửa path theo link Pug (/user/profile), thay pathAdmin nếu cần
+      method: 'PATCH',
+      body: formData
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.code === 'error') {
+          alert(data.message);
+          validation.lockSubmitButton(); // Unlock nếu cần
+        } else if (data.code === 'success') {
+          alert('Cập nhật thành công!'); // Hoặc toast notification
+          window.location.reload();
+        }
+      })
+      .catch((err) => {
+        console.error('Lỗi submit:', err);
+        alert('Có lỗi xảy ra, vui lòng thử lại!');
+      });
+  });
+});
+// End Profile Edit Form

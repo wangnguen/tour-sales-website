@@ -1,0 +1,37 @@
+extends ../layouts/default.pug
+
+block main
+  h1.box-title Thông tin cá nhân
+
+  .section-13
+    .profile-card
+      .profile-left
+        .info-item
+          span.label Họ tên
+          span.value= account.fullName
+        .info-item
+          span.label Email
+          span.value= account.email
+        .info-item
+          span.label Số điện thoại
+          if account.phone
+            span.value= account.phone
+          else
+            span.value Chưa cập nhật
+        .info-item
+          span.label Địa chỉ
+          if account.address
+            span.value= account.address
+          else
+            span.value Chưa cập nhật
+
+        .actions
+          a.btn(href=`/user/edit`) Chỉnh sửa
+          a.link(href=`/user/change_password`) Đổi mật khẩu
+
+      .profile-right
+        if account.avatar
+          img.avatar(src=account.avatar alt="Avatar")
+        else
+          .avatar-placeholder Chưa có ảnh
+

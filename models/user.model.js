@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     status: String,
     password: String,
     avatar: String,
+    adddress: String,
     createdBy: String,
     updatedBy: String,
     deleted: {

@@ -1,0 +1,34 @@
+extends ../layouts/default.pug
+
+block main
+  h1.box-title Cập nhật thông tin cá nhân
+
+  .section-13
+    form#profile-edit-form
+      .inner-group
+        label.inner-label(for="fullName") Họ tên
+        input(type="text" id="fullName" name="fullName" value=account.fullName)
+      .inner-group
+        label.inner-label(for="email") Email
+        input(type="email" id="email" name="email" value=account.email)
+      .inner-group
+        label.inner-label(for="phone") Số điện thoại
+        input(type="text" id="phone" name="phone" value=account.phone)
+      .inner-group
+        label.inner-label(for="address") Địa chỉ
+        input(type="text" id="address" name="address" value=account.address)
+      .inner-group.inner-two-col
+        label.inner-label(for="avatar") Ảnh đại diện
+        div.inner-upload-image(image-default=(account.avatar || ""))
+          input(type="file" id="avatar" accept="image/*" name="avatar")
+          if account.avatar
+            img.upload-image-preview(src=account.avatar alt="Avatar Preview")
+          else
+            .upload-image-placeholder
+              i.icon-upload (Icon upload của bạn, ví dụ Font Awesome)
+              p Chọn ảnh đại diện
+              small Định dạng: JPG, PNG (tối đa 5MB)
+      .inner-button
+        button(type="submit") Cập nhật
+    .inner-back
+      a(href=`/user/profile`) Quay lại trang cá nhân

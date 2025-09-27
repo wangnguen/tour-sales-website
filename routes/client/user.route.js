@@ -31,4 +31,6 @@ router.post(
   userController.resetPasswordPost
 );
 
+router.post('/logout', userController.logoutPost);
+
 module.exports = router;

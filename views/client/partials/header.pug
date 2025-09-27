@@ -15,6 +15,7 @@
           i.fa-solid.fa-building
           | #{settingWebsiteInfo.address}
 // End Top Header
+
 // Header
 header.header
   .container
@@ -22,6 +23,7 @@ header.header
       // Menu Mobile
       button.inner-menu-mobile
         i.fa-solid.fa-bars
+
       // Logo
       .inner-logo
         a(href="/")
@@ -29,6 +31,7 @@ header.header
             alt=settingWebsiteInfo.websiteName
             src=settingWebsiteInfo.logo
           )
+
       // Menu
       nav.inner-menu
         ul
@@ -48,21 +51,39 @@ header.header
           li
             a(href="/contact") Liên hệ
         .inner-overlay
+
       // Actions
       .inner-actions
-        .inner-user
-          a(href="/auth/login")
-            img(
-              alt="User" 
-              src="/assets/images/icon-user.svg"
-            )
+        .inner-user(class=account ? "logged-in" : "")
+          if account
+            a.inner-user-toggle(href="javascript:void(0);")
+              img(
+                alt=account.username || "User"
+                src=(account.avatar ? account.avatar : "/assets/images/icon-user.svg")
+              )
+              span.username= account.fullName || account.email || account.username
+            ul.inner-user-menu
+              li
+                a(href="/user/profile") Xem thông tin
+              li
+                a(href="/user/edit") Chỉnh sửa
+              li
+                a(href="javascript:;" class="inner-logout") Đăng xuất
+          else
+            a(href="/auth/login")
+              img(
+                alt="User"
+                src="/assets/images/icon-user.svg"
+              )
+              span.username Đăng nhập/Đăng ký
+
+        // Cart
         .inner-cart
           a(href="/cart")
             img(
-              alt="Cart" 
+              alt="Cart"
               src="/assets/images/icon-cart.svg"
             )
             span(mini-cart) 0
       // End Actions
-
 // End Header

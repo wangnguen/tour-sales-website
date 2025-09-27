@@ -11,10 +11,12 @@ const userRoutes = require('./user.route');
 
 const settingMiddleware = require('../../middlewares/client/setting.middleware');
 const categoryMiddleware = require('../../middlewares/client/category.middleware');
+const authUserMiddleware = require('../../middlewares/client/authUser.middleware');
 
 router.use(settingMiddleware.websiteInfo);
 router.use(categoryMiddleware.list);
 
+router.use(authUserMiddleware.attachUser);
 router.use('/', homeRoutes);
 router.use('/tour', tourRoutes);
 router.use('/cart', cartRoutes);

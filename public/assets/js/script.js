@@ -907,3 +907,55 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // End Sort
+
+// menu user
+document.addEventListener('DOMContentLoaded', () => {
+  const userToggle = document.querySelector('.inner-user-toggle');
+  const userBox = document.querySelector('.inner-user');
+
+  if (userToggle && userBox) {
+    userToggle.addEventListener('click', () => {
+      userBox.classList.toggle('active');
+    });
+
+    // click ra ngoài thì đóng
+    document.addEventListener('click', (e) => {
+      if (!userBox.contains(e.target)) {
+        userBox.classList.remove('active');
+      }
+    });
+  }
+});
+// End menu user
+
+// logout
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.querySelector('.inner-logout');
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      const result = await Swal.fire({
+        title: 'Bạn có chắc muốn đăng xuất?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Đăng xuất',
+        cancelButtonText: 'Hủy'
+      });
+
+      if (result.isConfirmed) {
+        fetch('/auth/logout', { method: 'POST' })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.code === 'success') {
+              Swal.fire('Đã đăng xuất!', '', 'success').then(() => {
+                window.location.href = '/';
+              });
+            }
+          });
+      }
+    });
+  }
+});
+// End logout

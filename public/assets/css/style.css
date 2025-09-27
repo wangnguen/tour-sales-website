@@ -308,6 +308,68 @@ textarea {
   }
 }
 
+/* User dropdown */
+.header .inner-user {
+  position: relative;
+}
+
+.header .inner-user .inner-user-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.header .inner-user .inner-user-toggle img {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+}
+
+.header .inner-user .username {
+  display: inline; /* luôn hiện */
+  margin-left: 6px;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.header .inner-user .inner-user-menu {
+  display: none;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 8px 0;
+  min-width: 180px;
+  z-index: 999;
+}
+
+.header .inner-user .inner-user-menu li a {
+  display: block;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+}
+
+.header .inner-user .inner-user-menu li a:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.header .inner-user.active .inner-user-menu {
+  display: block;
+}
+
 @media (max-width: 575.98px) {
   .header .inner-logo img {
     height: 40px;

@@ -6,4 +6,6 @@ router.get('/', contactController.contact);
 
 router.post('/create', contactController.createPost);
 
+router.post("/feedback", contactController.feedbackPost);
+
 module.exports = router;

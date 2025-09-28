@@ -31,4 +31,9 @@ const createPost = async (req, res) => {
   });
 };
 
-module.exports = { contact, createPost };
+const feedbackPost = async (req, res) => {
+  console.log(req.body);
+  res.json({ code: 'success', message: 'Cảm ơn bạn đã phản hồi!' });
+};
+
+module.exports = { contact, createPost, feedbackPost };

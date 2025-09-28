@@ -962,7 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Profile Edit Form
 // File JS cập nhật (giả sử đặt trong script tag cuối body hoặc file riêng)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const profileEditForm = document.querySelector('#profile-edit-form');
   if (!profileEditForm) return;
 
@@ -976,11 +976,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Init FilePond nếu lib có sẵn
   if (typeof FilePond !== 'undefined' && avatarInput) {
-    FilePond.registerPlugin(
-      FilePondPluginImagePreview,
-      FilePondPluginFileValidateSize,
-      FilePondPluginFileValidateType
-    );
+    FilePond.registerPlugin(FilePondPluginImagePreview, FilePondPluginFileValidateSize, FilePondPluginFileValidateType);
 
     filePondInstance = FilePond.create(avatarInput, {
       imagePreviewHeight: 120,
@@ -1017,13 +1013,17 @@ document.addEventListener('DOMContentLoaded', function() {
       // Xử lý server nếu cần upload ngay, nhưng ở đây chỉ client preview
       server: {
         load: null, // Không load server file, vì preview riêng
-        process: null, // Upload khi submit
+        process: null // Upload khi submit
       },
       // Thêm existing file nếu có avatar cũ (giả lập để preview trong FilePond)
-      files: imageDefault ? [{
-        source: imageDefault,
-        options: { type: 'local' }
-      }] : []
+      files: imageDefault
+        ? [
+            {
+              source: imageDefault,
+              options: { type: 'local' }
+            }
+          ]
+        : []
     });
 
     // Ẩn preview riêng nếu FilePond handle
@@ -1032,7 +1032,7 @@ document.addEventListener('DOMContentLoaded', function() {
   } else {
     // Fallback nếu không có FilePond: JS thuần cho preview
     if (avatarInput) {
-      avatarInput.addEventListener('change', function(e) {
+      avatarInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
           // Validate
@@ -1048,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           // Preview
           const reader = new FileReader();
-          reader.onload = function(e) {
+          reader.onload = function (e) {
             if (previewImg) {
               previewImg.src = e.target.result;
               previewImg.style.display = 'block';
@@ -1068,7 +1068,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Click container để select file
     if (uploadContainer) {
-      uploadContainer.addEventListener('click', function(e) {
+      uploadContainer.addEventListener('click', function (e) {
         if (e.target !== avatarInput) {
           avatarInput.click();
         }
@@ -1154,7 +1154,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (avatarInput.files && avatarInput.files[0]) {
       // Fallback: kiểm tra nếu không phải default (dựa tên file hoặc size)
       avatar = avatarInput.files[0];
-      if (imageDefault && avatar.name === 'default-avatar.jpg') { // Giả sử tên default, điều chỉnh theo backend
+      if (imageDefault && avatar.name === 'default-avatar.jpg') {
+        // Giả sử tên default, điều chỉnh theo backend
         avatar = null;
       }
     }
@@ -1170,7 +1171,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fetch submit
-    fetch(`/user/profile/edit`, { // Sửa path theo link Pug (/user/profile), thay pathAdmin nếu cần
+    fetch(`/user/profile/edit`, {
+      // Sửa path theo link Pug (/user/profile), thay pathAdmin nếu cần
       method: 'PATCH',
       body: formData
     })
@@ -1191,3 +1193,126 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 // End Profile Edit Form
+
+// Form conntact
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.querySelector('.inner-form form');
+  if (form) {
+    const validator = new JustValidate(form, {
+      errorLabelCssClass: 'just-validate-error-label',
+      errorFieldCssClass: 'just-validate-error-field',
+      successFieldCssClass: 'just-validate-success-field'
+    });
+
+    validator
+      .addField('input[name="name"]', [
+        {
+          rule: 'required',
+          errorMessage: 'Họ và tên là bắt buộc'
+        },
+        {
+          rule: 'minLength',
+          value: 2,
+          errorMessage: 'Họ và tên phải có ít nhất 2 ký tự'
+        }
+      ])
+      .addField('input[name="email"]', [
+        {
+          rule: 'required',
+          errorMessage: 'Email là bắt buộc'
+        },
+        {
+          rule: 'email',
+          errorMessage: 'Email không hợp lệ'
+        }
+      ])
+      .addField('input[name="phone"]', [
+        {
+          rule: 'required',
+          errorMessage: 'Số điện thoại là bắt buộc'
+        },
+        {
+          validator: (value) => /^\d+$/.test(value),
+          errorMessage: 'Số điện thoại phải là số'
+        }
+      ])
+      .addField('input[name="subject"]', [
+        {
+          rule: 'required',
+          errorMessage: 'Tiêu đề là bắt buộc'
+        },
+        {
+          rule: 'minLength',
+          value: 3,
+          errorMessage: 'Tiêu đề phải có ít nhất 3 ký tự'
+        }
+      ])
+      .addField('textarea[name="message"]', [
+        {
+          rule: 'required',
+          errorMessage: 'Nội dung tin nhắn là bắt buộc'
+        },
+        {
+          rule: 'minLength',
+          value: 10,
+          errorMessage: 'Nội dung phải có ít nhất 10 ký tự'
+        }
+      ])
+      .onSuccess((event) => {
+        const name = event.target.name.value;
+        const email = event.target.email.value;
+        const phone = event.target.phone.value;
+        const subject = event.target.subject.value;
+        const message = event.target.message.value;
+
+        const dataFinal = {
+          name: name,
+          email: email,
+          phone: phone,
+          subject: subject,
+          message: message
+        };
+
+        fetch('/contact/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataFinal)
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.code === 'error') {
+              Swal.fire({
+                icon: 'error',
+                title: 'Yêu cầu thất bại',
+                text: data.message,
+                confirmButtonText: 'OK'
+              });
+            }
+
+            if (data.code === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Tin nhắn đã được gửi thành công!',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(() => {
+                form.reset();
+                validator.clearFields();
+              });
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Có lỗi xảy ra',
+              text: 'Vui lòng thử lại.',
+              confirmButtonText: 'OK'
+            });
+          });
+      });
+  }
+});
+// End form contact

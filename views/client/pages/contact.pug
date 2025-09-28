@@ -1,21 +1,46 @@
 extends ../layouts/default
 
 block main
+  
+
   .container
-    .section-12
+    .section-14
       .inner-wrap
-        h1.inner-title-main.mb-4 Về Chúng Tôi
+        h1.box-title Liên Hệ Với Chúng Tôi
         .inner-info
-          p.mb-3 Chào mừng bạn đến với công ty du lịch của chúng tôi! Chúng tôi cam kết mang đến những trải nghiệm tour tốt nhất, dịch vụ chuyên nghiệp và những hành trình đáng nhớ cho mọi khách hàng.
-          p.mb-3 Với nhiều năm kinh nghiệm trong ngành du lịch, đội ngũ của chúng tôi luôn tận tâm giúp bạn khám phá những điểm đến và nền văn hóa mới. Chúng tôi cung cấp đa dạng các tour từ nghỉ dưỡng thư giãn đến các chuyến phiêu lưu, phù hợp với mọi nhu cầu của bạn.
-          ul.company-info-list
+          p.mb-3 Chào mừng bạn đến với trang liên hệ của công ty du lịch chúng tôi! Chúng tôi luôn sẵn sàng hỗ trợ bạn với mọi thắc mắc về tour du lịch, đặt chỗ hoặc tư vấn hành trình. Hãy liên hệ ngay để nhận được sự tư vấn chuyên nghiệp và nhanh chóng nhất.
+          p.mb-3 Với đội ngũ nhân viên giàu kinh nghiệm và tận tâm, chúng tôi cam kết mang đến cho bạn những giải pháp du lịch phù hợp nhất. Dù bạn đang lên kế hoạch cho kỳ nghỉ gia đình, chuyến phiêu lưu cá nhân hay sự kiện doanh nghiệp, chúng tôi đều ở đây để đồng hành cùng bạn.
+          p.mb-2 Chúng tôi hoạt động từ thứ 2 đến thứ 6, từ 8:00 AM đến 6:00 PM, và hỗ trợ 24/7 qua email. Hãy chia sẻ ý tưởng của bạn, và chúng tôi sẽ biến chúng thành những kỷ niệm đáng nhớ!
+          ul.company-info-list.mb-3
             li
               i.fa-solid.fa-location-dot.mr-2
               |   Bac Tu Liem, Hanoi
             li
               i.fa-solid.fa-phone.mr-2
-              |   0869 998 299 
+              |   0869 998 299
             li
               i.fa-solid.fa-envelope.mr-2
               |   wangnguenlc79@gmail.com
-          p.mt-4 Cảm ơn bạn đã tin tưởng và lựa chọn chúng tôi cho những chuyến đi của mình!
+            li
+              i.fa-solid.fa-clock.mr-2
+              |   Giờ làm việc: T2 - T6, 8:00 - 18:00
+          .inner-form
+            h3.inner-subtitle.mb-3 Gửi Tin Nhắn Cho Chúng Tôi
+            form(action="/contact/feedback" method="POST")
+              .inner-inputs
+                .inner-input
+                  input(type="text" placeholder="Họ và tên *" name="name" required)
+                .inner-input
+                  input(type="email" placeholder="Email *" name="email" required)
+                .inner-input
+                  input(type="tel" placeholder="Số điện thoại" name="phone")
+                .inner-input
+                  input(type="text" placeholder="Tiêu đề" name="subject")
+              .inner-input.mb-3
+                textarea(placeholder="Nội dung tin nhắn của bạn..." name="message" required)
+              .inner-button
+                button(type="submit") Gửi Tin Nhắn
+          .inner-map.mt-4
+            h3.inner-subtitle.mb-3 Vị Trí Văn Phòng
+            iframe(src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0580999999997!2d105.748!3d21.036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313454b9a0000001%3A0x0!2zQmuxIEjGsOG7m25nLCBI4buTYyIMSQw7RuZywgSMOhbmcgxJHhuqFt!5e0!3m2!1svi!2s!4v1630000000000" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy").rounded
+        p.mt-3 Cảm ơn bạn đã quan tâm và lựa chọn chúng tôi. Chúng tôi mong được phục vụ bạn sớm!

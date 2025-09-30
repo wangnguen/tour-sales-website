@@ -1,46 +1,47 @@
-const jwt = require("jsonwebtoken");
-const AccountAdmin = require("../../models/admin_account.model");
-const Role = require("../../models/role.model");
+const jwt = require('jsonwebtoken');
+const AccountAdmin = require('../../models/admin_account.model');
+const Role = require('../../models/role.model');
 
 const verifyToken = async (req, res, next) => {
-	try {
-		const token = req.cookies.token;
-		if (!token) {
-			res.redirect(`/${pathAdmin}/account/login`);
-			return;
-		}
+  try {
+    const token = req.cookies.tokenAdmin;
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET);
-		const { id, email } = decoded;
+    if (!token) {
+      res.redirect(`/${pathAdmin}/account/login`);
+      return;
+    }
 
-		const existAccount = await AccountAdmin.findOne({
-			_id: id,
-			email: email,
-			status: "active",
-		});
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
+    const { id, email } = decoded;
 
-		if (!existAccount) {
-			res.clearCookie("token");
-			res.redirect(`/${pathAdmin}/account/login`);
-			return;
-		}
+    const existAccount = await AccountAdmin.findOne({
+      _id: id,
+      email: email,
+      status: 'active'
+    });
 
-		const role = await Role.findOne({
-			_id: existAccount.role,
-		});
-		existAccount.roleName = role.name;
+    if (!existAccount) {
+      res.clearCookie('tokenAdmin');
+      res.redirect(`/${pathAdmin}/account/login`);
+      return;
+    }
 
-		req.account = existAccount;
-		req.permissions = role.permissions;
+    const role = await Role.findOne({
+      _id: existAccount.role
+    });
+    existAccount.roleName = role.name;
 
-		res.locals.account = existAccount;
-		res.locals.permissions = role.permissions;
+    req.account = existAccount;
+    req.permissions = role.permissions;
 
-		next();
-	} catch (error) {
-		res.clearCookie("token");
-		res.redirect(`/${pathAdmin}/account/login`);
-	}
+    res.locals.account = existAccount;
+    res.locals.permissions = role.permissions;
+
+    next();
+  } catch (error) {
+    res.clearCookie('tokenAdmin');
+    res.redirect(`/${pathAdmin}/account/login`);
+  }
 };
 
 module.exports = { verifyToken };

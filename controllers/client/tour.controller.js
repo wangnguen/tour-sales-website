@@ -1,87 +1,85 @@
-const moment = require("moment");
-const Tour = require("../../models/tour.model");
-const Category = require("../../models/category.model");
-const City = require("../../models/city.model");
+const moment = require('moment');
+const Tour = require('../../models/tour.model');
+const Category = require('../../models/category.model');
+const City = require('../../models/city.model');
 
 const detail = async (req, res) => {
-	const slug = req.params.slug;
+  const slug = req.params.slug;
 
-	// Tìm tour theo slug
-	const tourDetail = await Tour.findOne({
-		slug: slug,
-		status: "active",
-		deleted: false,
-	});
-	// Hết tìm tour theo slug
+  // Tìm tour theo slug
+  const tourDetail = await Tour.findOne({
+    slug: slug,
+    status: 'active',
+    deleted: false
+  });
+  // Hết tìm tour theo slug
 
-	if (tourDetail) {
-		// Breadcrumb
-		var breadcrumb = {
-			image: tourDetail.avatar,
-			title: tourDetail.name,
-			list: [
-				{
-					link: "/",
-					title: "Trang chủ",
-				},
-			],
-		};
+  if (tourDetail) {
+    // Breadcrumb
+    var breadcrumb = {
+      image: tourDetail.avatar,
+      title: tourDetail.name,
+      list: [
+        {
+          link: '/',
+          title: 'Trang chủ'
+        }
+      ]
+    };
 
-		const category = await Category.findOne({
-			_id: tourDetail.category,
-			deleted: false,
-			status: "active",
-		});
+    const category = await Category.findOne({
+      _id: tourDetail.category,
+      deleted: false,
+      status: 'active'
+    });
 
-		if (category) {
-			// Tìm danh mục cha
-			if (category.parent) {
-				const parentCategory = await Category.findOne({
-					_id: category.parent,
-					deleted: false,
-					status: "active",
-				});
+    if (category) {
+      // Tìm danh mục cha
+      if (category.parent) {
+        const parentCategory = await Category.findOne({
+          _id: category.parent,
+          deleted: false,
+          status: 'active'
+        });
 
-				if (parentCategory) {
-					breadcrumb.list.push({
-						link: `/category/${parentCategory.slug}`,
-						title: parentCategory.name,
-					});
-				}
-			}
+        if (parentCategory) {
+          breadcrumb.list.push({
+            link: `/category/${parentCategory.slug}`,
+            title: parentCategory.name
+          });
+        }
+      }
 
-			// Thêm danh mục hiện tại
-			breadcrumb.list.push({
-				link: `/category/${category.slug}`,
-				title: category.name,
-			});
-		}
+      // Thêm danh mục hiện tại
+      breadcrumb.list.push({
+        link: `/category/${category.slug}`,
+        title: category.name
+      });
+    }
 
-		breadcrumb.list.push({
-			link: `/tour/detail/${slug}`,
-			title: tourDetail.name,
-		});
-		// End breadcrumb
+    breadcrumb.list.push({
+      link: `/tour/detail/${slug}`,
+      title: tourDetail.name
+    });
+    // End breadcrumb
 
-		// Thông tin chi tiết
-		tourDetail.departureDateFormat = moment(tourDetail.departureDate).format(
-			"DD/MM/YYYY",
-		);
+    // Thông tin chi tiết
+    tourDetail.departureDateFormat = moment(tourDetail.departureDate).format('DD/MM/YYYY');
 
-		const cityList = await City.find({
-			_id: { $in: tourDetail.locations },
-		});
-		// Hết thông tin chi tiết
+    const cityList = await City.find({
+      _id: { $in: tourDetail.locations }
+    });
+    // Hết thông tin chi tiết
 
-		res.render("client/pages/tour_detail", {
-			titlePage: "Chi tiết tour",
-			breadcrumb: breadcrumb,
-			tourDetail,
-			cityList,
-		});
-	} else {
-		res.redirect("/");
-	}
+    res.render('client/pages/tour_detail', {
+      titlePage: 'Chi tiết tour',
+      breadcrumb: breadcrumb,
+      tourDetail,
+      cityList
+    });
+  } else {
+    res.redirect('/');
+  }
 };
 
 module.exports = { detail };

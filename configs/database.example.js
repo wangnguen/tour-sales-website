@@ -1,24 +1,25 @@
-const mongoose = require("mongoose");
+// singleton
+const mongoose = require('mongoose');
 
 class Database {
-	constructor() {
-		this.connect();
-	}
+  constructor() {
+    this.connect();
+  }
 
-	async connect() {
-		try {
-			await mongoose.connect(process.env.DATABASE);
-			console.log("DB connection successful !");
-		} catch (error) {
-			console.log("DB connection failed !", error);
-		}
-	}
-	static getInstance() {
-		if (!Database.instance) {
-			Database.instance = new Database();
-		}
-		return Database.instance;
-	}
+  async connect() {
+    try {
+      await mongoose.connect(process.env.DATABASE);
+      console.log('DB connection successful !');
+    } catch (error) {
+      console.log('DB connection failed !', error);
+    }
+  }
+  static getInstance() {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
+  }
 }
 
 const instanceMongodb = Database.getInstance();

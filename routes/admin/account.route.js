@@ -1,50 +1,38 @@
-const router = require("express").Router();
+const router = require('express').Router();
 
-const accountController = require("../../controllers/admin/account.controller");
+const accountController = require('../../controllers/admin/account.controller');
 
-const accountValidate = require("../../validates/admin/account.validate");
+const accountValidate = require('../../validates/admin/account.validate');
 
-const authMiddleware = require("../../middlewares/admin/auth.middleware");
+const authMiddleware = require('../../middlewares/admin/auth.middleware');
 
-router.get("/login", accountController.login);
+router.get('/login', accountController.login);
 
-router.post("/login", accountValidate.loginPost, accountController.loginPost);
+router.post('/login', accountValidate.loginPost, accountController.loginPost);
 
-router.get("/register", accountController.register);
+router.get('/register', accountController.register);
 
-router.post(
-	"/register",
-	accountValidate.registerPost,
-	accountController.registerPost,
-);
+router.post('/register', accountValidate.registerPost, accountController.registerPost);
 
-router.get("/register-initial", accountController.registerInitial);
+router.get('/register-initial', accountController.registerInitial);
 
-router.get("/forgot_password", accountController.forgotPassword);
+router.get('/forgot_password', accountController.forgotPassword);
 
-router.post(
-	"/forgot_password",
-	accountValidate.forgotPasswordPost,
-	accountController.forgotPasswordPost,
-);
+router.post('/forgot_password', accountValidate.forgotPasswordPost, accountController.forgotPasswordPost);
 
-router.get("/otp_password", accountController.otpPassword);
+router.get('/otp_password', accountController.otpPassword);
+
+router.post('/otp_password', accountValidate.otpPost, accountController.otpPasswordPost);
+
+router.get('/reset_password', accountController.resetPassword);
 
 router.post(
-	"/otp_password",
-	accountValidate.otpPost,
-	accountController.otpPasswordPost,
+  '/reset_password',
+  authMiddleware.verifyToken,
+  accountValidate.resetPasswordPost,
+  accountController.resetPasswordPost
 );
 
-router.get("/reset_password", accountController.resetPassword);
-
-router.post(
-	"/reset_password",
-	authMiddleware.verifyToken,
-	accountValidate.resetPasswordPost,
-	accountController.resetPasswordPost,
-);
-
-router.post("/logout", accountController.logoutPost);
+router.post('/logout', accountController.logoutPost);
 
 module.exports = router;

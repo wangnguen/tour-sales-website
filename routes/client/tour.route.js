@@ -1,7 +1,7 @@
-const router = require("express").Router();
+const router = require('express').Router();
 
-const tourController = require("../../controllers/client/tour.controller");
+const tourController = require('../../controllers/client/tour.controller');
 
-router.get("/detail/:slug", tourController.detail);
+router.get('/detail/:slug', tourController.detail);
 
 module.exports = router;

@@ -60,7 +60,7 @@ const loginPost = async (req, res) => {
     httpOnly: true,
     sameSite: 'strict'
   });
-  
+
   //res.json js -> json: express
   res.json({
     code: 'success',

@@ -1,69 +1,61 @@
-const router = require("express").Router();
-const multer = require("multer");
+const router = require('express').Router();
+const multer = require('multer');
 
-const settingController = require("../../controllers/admin/setting.controller");
-const settingValidate = require("../../validates/admin/setting.validate");
-const cloudinaryHelper = require("../../helpers/cloudinary.helper");
+const settingController = require('../../controllers/admin/setting.controller');
+const settingValidate = require('../../validates/admin/setting.validate');
+const cloudinaryHelper = require('../../helpers/cloudinary.helper');
 
 const upload = multer({ storage: cloudinaryHelper.storage });
 
-router.get("/list", settingController.list);
+router.get('/list', settingController.list);
 
-router.get("/website_info", settingController.websiteInfo);
+router.get('/website_info', settingController.websiteInfo);
 
 router.patch(
-	"/website_info",
-	upload.fields([
-		{ name: "logo", maxCount: 1 },
-		{ name: "favicon", maxCount: 1 },
-	]),
-	settingValidate.websiteInfoPatch,
-	settingController.websiteInfoPatch,
+  '/website_info',
+  upload.fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'favicon', maxCount: 1 }
+  ]),
+  settingValidate.websiteInfoPatch,
+  settingController.websiteInfoPatch
 );
 
-router.get("/account_admin/list", settingController.accountAdminList);
+router.get('/account_admin/list', settingController.accountAdminList);
 
-router.get("/account_admin/create", settingController.accountAdminCreate);
+router.get('/account_admin/create', settingController.accountAdminCreate);
 router.post(
-	"/account_admin/create",
-	upload.single("avatar"),
-	settingValidate.accountAdminCreatePost,
-	settingController.accountAdminCreatePost,
+  '/account_admin/create',
+  upload.single('avatar'),
+  settingValidate.accountAdminCreatePost,
+  settingController.accountAdminCreatePost
 );
 
-router.get("/account_admin/edit/:id", settingController.accountAdminEdit);
+router.get('/account_admin/edit/:id', settingController.accountAdminEdit);
 
 router.patch(
-	"/account_admin/edit/:id",
-	upload.single("avatar"),
-	settingValidate.accountAdminCreatePost,
-	settingController.accountAdminEditPatch,
+  '/account_admin/edit/:id',
+  upload.single('avatar'),
+  settingValidate.accountAdminCreatePost,
+  settingController.accountAdminEditPatch
 );
 
-router.get("/role/list", settingController.roleList);
+router.get('/role/list', settingController.roleList);
 
-router.get("/role/create", settingController.roleCreate);
+router.get('/role/create', settingController.roleCreate);
 
-router.post(
-	"/role/create",
-	settingValidate.roleCreatePost,
-	settingController.roleCreatePost,
-);
+router.post('/role/create', settingValidate.roleCreatePost, settingController.roleCreatePost);
 
-router.get("/role/edit/:id", settingController.roleEdit);
+router.get('/role/edit/:id', settingController.roleEdit);
 
-router.patch(
-	"/role/edit/:id",
-	settingValidate.roleCreatePost,
-	settingController.roleEditPatch,
-);
+router.patch('/role/edit/:id', settingValidate.roleCreatePost, settingController.roleEditPatch);
 
-router.patch("/account_admin/change-multi", settingController.changeMultiPatch);
+router.patch('/account_admin/change-multi', settingController.changeMultiPatch);
 
-router.patch("/account_admin/delete/:id", settingController.deletePatch);
+router.patch('/account_admin/delete/:id', settingController.deletePatch);
 
-router.patch("/role/change-multi", settingController.changeMultiRolePatch);
+router.patch('/role/change-multi', settingController.changeMultiRolePatch);
 
-router.patch("/role/delete/:id", settingController.deleteRolePatch);
+router.patch('/role/delete/:id', settingController.deleteRolePatch);
 
 module.exports = router;

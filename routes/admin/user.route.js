@@ -1,7 +1,7 @@
-const router = require("express").Router();
+const router = require('express').Router();
 
-const userController = require("../../controllers/admin/user.controller");
+const userController = require('../../controllers/admin/user.controller');
 
-router.get("/list", userController.list);
+router.get('/list', userController.list);
 
 module.exports = router;

@@ -71,7 +71,3 @@ yarn start
 - `helpers/` — Utility functions (mail, cloudinary, etc.)
 - `middlewares/` — Auth, validation, and other middleware
 - `configs/` — Configuration files
-
-## License
-
-MIT

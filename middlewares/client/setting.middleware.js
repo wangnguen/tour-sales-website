@@ -1,10 +1,10 @@
-const SettingWebsiteInfo = require("../../models/setting_website_info.model");
+const SettingWebsiteInfo = require('../../models/setting_website_info.model');
 
 const websiteInfo = async (req, res, next) => {
-	const settingWebsiteInfo = await SettingWebsiteInfo.findOne({});
+  const settingWebsiteInfo = await SettingWebsiteInfo.findOne({});
 
-	res.locals.settingWebsiteInfo = settingWebsiteInfo;
+  res.locals.settingWebsiteInfo = settingWebsiteInfo;
 
-	next();
+  next();
 };
 module.exports = { websiteInfo };

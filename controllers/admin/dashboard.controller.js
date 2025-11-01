@@ -3,55 +3,53 @@ const moment = require('moment');
 const Order = require('../../models/order.model');
 const AccountAdmin = require('../../models/admin_account.model');
 const variableConfig = require('../../configs/variable');
+const User = require('../../models/user.model');
 
 const dashboard = async (req, res) => {
-  // Section 3
-  const find = {
-    deleted: false
-  };
+  // Prepare lookup maps for status and payment info
+  const paymentMethodMap = variableConfig.paymentMethod.reduce((map, item) => {
+    map[item.value] = item.label;
+    return map;
+  }, {});
 
-  const orderList = await Order.find(find)
-    .sort({
-      createdAt: 'desc'
-    })
-    .limit(10);
+  const paymentStatusMap = variableConfig.paymentStatus.reduce((map, item) => {
+    map[item.value] = item.label;
+    return map;
+  }, {});
 
-  for (const orderDetail of orderList) {
-    orderDetail.paymentMethodName = variableConfig.paymentMethod.find(
-      (item) => item.value === orderDetail.paymentMethod
-    ).label;
+  const orderStatusMap = variableConfig.orderStatus.reduce((map, item) => {
+    map[item.value] = item.label;
+    return map;
+  }, {});
 
-    orderDetail.paymentStatusName = variableConfig.paymentStatus.find(
-      (item) => item.value === orderDetail.paymentStatus
-    ).label;
+  // Get data in parallel
+  const [recentOrders, totalAdmin, allOrders, totalUser] = await Promise.all([
+    Order.find({ deleted: false })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean(),
+    AccountAdmin.countDocuments({ deleted: false }),
+    Order.find({ deleted: false }).select('total').lean(),
+    User.countDocuments({ deleted: false })
+  ]);
 
-    orderDetail.statusName = variableConfig.orderStatus.find((item) => item.value === orderDetail.status).label;
+  // Process recent orders
+  const orderList = recentOrders.map((order) => ({
+    ...order,
+    paymentMethodName: paymentMethodMap[order.paymentMethod],
+    paymentStatusName: paymentStatusMap[order.paymentStatus],
+    statusName: orderStatusMap[order.status],
+    createdAtTime: moment(order.createdAt).format('HH:mm'),
+    createdAtDate: moment(order.createdAt).format('DD/MM/YYYY')
+  }));
 
-    orderDetail.createdAtTime = moment(orderDetail.createdAt).format('HH:mm');
-    orderDetail.createdAtDate = moment(orderDetail.createdAt).format('DD/MM/YYYY');
-  }
-  // End section 3
-
-  // Section 1
+  // Calculate overview statistics
   const overView = {
-    totalAdmin: 0,
-    totalUser: 0,
-    totalOrder: 0,
-    totalPrice: 0
+    totalAdmin,
+    totalUser,
+    totalOrder: allOrders.length,
+    totalPrice: allOrders.reduce((sum, order) => sum + (order.total || 0), 0)
   };
-
-  overView.totalAdmin = await AccountAdmin.countDocuments({
-    deleted: false
-  });
-
-  const orderListSection1 = await Order.find({
-    deleted: false
-  });
-  overView.totalOrder = orderListSection1.length;
-
-  overView.totalPrice = orderListSection1.reduce((sum, item) => {
-    return sum + item.total;
-  }, 0);
   // End section 1
 
   res.render('admin/pages/dashboard', {
@@ -64,49 +62,51 @@ const dashboard = async (req, res) => {
 const revenueChartPost = async (req, res) => {
   const { currentMonth, currentYear, previousMonth, previousYear, arrayDay } = req.body;
 
-  // Truy vấn tất cả đơn hàng trong tháng hiện tại
-  const orderCurrentMonth = await Order.find({
-    deleted: false,
-    createdAt: {
-      $gte: new Date(currentYear, currentMonth - 1, 1),
-      $lt: new Date(currentYear, currentMonth, 1)
-    }
-  });
-
-  // Truy vấn tất cả đơn hàng trong tháng trước
-  const orderPreviousMonth = await Order.find({
-    deleted: false,
-    createdAt: {
-      $gte: new Date(previousYear, previousMonth - 1, 1),
-      $lt: new Date(previousYear, previousMonth, 1)
-    }
-  });
-
-  // Tạo mảng doanh thu theo từng ngày
-  const dataMonthCurrent = [];
-  const dataMonthPrevious = [];
-
-  for (const day of arrayDay) {
-    // Tính tổng doanh thu theo từng ngày của tháng hiện tại
-    let totalCurrent = 0;
-    for (const order of orderCurrentMonth) {
-      const orderDate = new Date(order.createdAt).getDate();
-      if (day === orderDate) {
-        totalCurrent += order.total;
+  // Query orders for both months in parallel
+  const [currentMonthOrders, previousMonthOrders] = await Promise.all([
+    Order.aggregate([
+      {
+        $match: {
+          deleted: false,
+          createdAt: {
+            $gte: new Date(currentYear, currentMonth - 1, 1),
+            $lt: new Date(currentYear, currentMonth, 1)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dayOfMonth: '$createdAt' },
+          total: { $sum: '$total' }
+        }
       }
-    }
-    dataMonthCurrent.push(totalCurrent);
-
-    // Tính tổng doanh thu theo từng ngày của tháng trước
-    let totalPrevious = 0;
-    for (const order of orderPreviousMonth) {
-      const orderDate = new Date(order.createdAt).getDate();
-      if (day === orderDate) {
-        totalPrevious += order.total;
+    ]),
+    Order.aggregate([
+      {
+        $match: {
+          deleted: false,
+          createdAt: {
+            $gte: new Date(previousYear, previousMonth - 1, 1),
+            $lt: new Date(previousYear, previousMonth, 1)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dayOfMonth: '$createdAt' },
+          total: { $sum: '$total' }
+        }
       }
-    }
-    dataMonthPrevious.push(totalPrevious);
-  }
+    ])
+  ]);
+
+  // Create maps for faster lookups
+  const currentMonthMap = new Map(currentMonthOrders.map((item) => [item._id, item.total]));
+  const previousMonthMap = new Map(previousMonthOrders.map((item) => [item._id, item.total]));
+
+  // Generate revenue arrays
+  const dataMonthCurrent = arrayDay.map((day) => currentMonthMap.get(day) || 0);
+  const dataMonthPrevious = arrayDay.map((day) => previousMonthMap.get(day) || 0);
 
   res.json({
     code: 'success',

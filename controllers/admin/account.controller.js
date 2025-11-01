@@ -6,6 +6,48 @@ const jwt = require('jsonwebtoken');
 const generateHelper = require('../../helpers/generate.helper');
 const mailHelper = require('../../helpers/mail.helper');
 
+// Constants
+const JWT_EXPIRES = {
+  REMEMBER: '30d',
+  DEFAULT: '1d'
+};
+
+const COOKIE_MAX_AGE = {
+  REMEMBER: 30 * 24 * 60 * 60 * 1000, // 30 days
+  DEFAULT: 24 * 60 * 60 * 1000 // 1 day
+};
+
+const OTP_EXPIRE_TIME = 5 * 60 * 1000; // 5 minutes
+const SALT_ROUNDS = 10;
+
+// Helper functions
+const generateToken = (account, remember = false) => {
+  return jwt.sign(
+    {
+      id: account.id,
+      email: account.email
+    },
+    process.env.JWT_SECRET_ADMIN,
+    {
+      expiresIn: remember ? JWT_EXPIRES.REMEMBER : JWT_EXPIRES.DEFAULT
+    }
+  );
+};
+
+const setCookie = (res, token, remember = false) => {
+  res.cookie('tokenAdmin', token, {
+    maxAge: remember ? COOKIE_MAX_AGE.REMEMBER : COOKIE_MAX_AGE.DEFAULT,
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: false
+  });
+};
+
+const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(SALT_ROUNDS);
+  return bcrypt.hash(password, salt);
+};
+
 const login = (req, res) => {
   res.render('admin/pages/login', {
     titlePage: 'Đăng nhập'
@@ -13,59 +55,41 @@ const login = (req, res) => {
 };
 
 const loginPost = async (req, res) => {
-  const { email, password, rememberPassword } = req.body;
-  const existAccount = await AccountAdmin.findOne({ email: email });
+  try {
+    const { email, password, rememberPassword } = req.body;
 
-  if (!existAccount) {
-    res.json({
-      code: 'error',
-      message: 'Email does not exist in the system !'
-    });
-    return; // dung chuong trinh
-  }
+    const existAccount = await AccountAdmin.findOne({ email: email })
+      .select('email password status')
 
-  const isPasswordValid = await bcrypt.compare(password, existAccount.password);
-
-  if (!isPasswordValid) {
-    res.json({
-      code: 'error',
-      message: 'Incorrect password !'
-    });
-    return;
-  }
-
-  if (existAccount.status != 'active') {
-    res.json({
-      code: 'error',
-      message: 'Account not activated !'
-    });
-    return;
-  }
-
-  // Tạo JWT
-  const tokenAdmin = jwt.sign(
-    {
-      id: existAccount.id,
-      email: existAccount.email
-    },
-    process.env.JWT_SECRET_ADMIN,
-    {
-      expiresIn: rememberPassword ? '30d' : '1d' // token co thoi han 30 hoac 1 ngay
+    if (!existAccount || !(await bcrypt.compare(password, existAccount.password))) {
+      return res.status(401).json({
+        code: 'error',
+        message: 'Email hoặc mật khẩu không tồn tại trong hệ thống!'
+      });
     }
-  );
 
-  // Lưu token vào cookie
-  res.cookie('tokenAdmin', tokenAdmin, {
-    maxAge: rememberPassword ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000, // token hieu luc 30 hoac 1 ngay
-    httpOnly: true,
-    sameSite: 'strict'
-  });
+    if (existAccount.status !== 'active') {
+      return res.status(403).json({
+        code: 'error',
+        message: 'Tài khoản chưa được kích hoạt!'
+      });
+    }
 
-  //res.json js -> json: express
-  res.json({
-    code: 'success',
-    message: 'Account login successful !'
-  });
+    // Generate token and set cookie
+    const token = generateToken(existAccount, rememberPassword);
+    setCookie(res, token, rememberPassword);
+
+    res.json({
+      code: 'success',
+      message: 'Đăng nhập thành công!'
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      code: 'error',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
+    });
+  }
 };
 
 const register = (req, res) => {
@@ -75,38 +99,42 @@ const register = (req, res) => {
 };
 
 const registerPost = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  try {
+    const { fullName, email, password } = req.body;
 
-  const existAccount = await AccountAdmin.findOne({
-    email: email
-  });
+    // Check existing account 
+    const existAccount = await AccountAdmin.findOne({ email })
+      .select('email')
+      .lean();
 
-  if (existAccount) {
-    res.json({
-      code: 'error',
-      message: 'Email already exists in the system'
+    if (existAccount) {
+      return res.status(409).json({
+        code: 'error',
+        message: 'Email đã tồn tại trong hệ thống!'
+      });
+    }
+
+    // Hash password and create new account
+    const hashedPassword = await hashPassword(password);
+
+    await AccountAdmin.create({
+      fullName,
+      email,
+      password: hashedPassword,
+      status: 'initial'
     });
-    return; // dung chuong trinh
+
+    res.status(201).json({
+      code: 'success',
+      message: 'Đăng ký tài khoản thành công!'
+    });
+  } catch (error) {
+    console.error('Register error:', error);
+    res.status(500).json({
+      code: 'error',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
+    });
   }
-
-  // Mã hoá mật khẩu
-  const salt = await bcrypt.genSalt(10); // Tạo ra chuỗi ngẫu nhiên có 10 ký
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const newAccount = new AccountAdmin({
-    fullName: fullName,
-    email: email,
-    password: hashedPassword,
-    status: 'initial'
-  });
-
-  await newAccount.save();
-
-  //res.json js -> json: express
-  res.json({
-    code: 'success',
-    message: 'Đăng ký tài khoản thành công !'
-  });
 };
 
 const registerInitial = (req, res) => {
@@ -122,51 +150,52 @@ const forgotPassword = (req, res) => {
 };
 
 const forgotPasswordPost = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
+    // Check account existence & existing forgot password
+    const [existAccount, existEmailInForgotPassword] = await Promise.all([
+      AccountAdmin.findOne({ email }).select('email').lean(),
+      ForgotPassword.findOne({ email }).select('email').lean()
+    ]);
 
-  // ktra email co ton tai hay khong
-  const existAccount = AccountAdmin.findOne({ email: email });
+    if (!existAccount) {
+      return res.status(404).json({
+        code: 'error',
+        message: 'Email không tồn tại trong hệ thống'
+      });
+    }
 
-  if (!existAccount) {
-    res.json({
-      code: 'error',
-      message: 'Email không tồn tại trong hệ thống'
+    if (existEmailInForgotPassword) {
+      return res.status(429).json({
+        code: 'error',
+        message: 'Vui lòng gửi lại yêu cầu sau 5 phút'
+      });
+    }
+
+    // Generate OTP and create record
+    const otp = generateHelper.generateRandomNumber(6);
+    await ForgotPassword.create({
+      email,
+      otp,
+      expireAt: Date.now() + OTP_EXPIRE_TIME
     });
-    return;
-  }
 
-  // kiem tra email da ton tai trong ForgotPassword chua ?
-  const existEmailInForgotPassword = await ForgotPassword.findOne({
-    email: email
-  });
+    // Send OTP email
+    const subject = 'Mã OTP lấy lại mật khẩu';
+    const content = `Mã OTP của bạn là <b style="color: green;">${otp}</b>. Mã OTP có hiệu lực trong 5 phút, vui lòng không cung cấp cho bất kì ai!`;
+    await mailHelper.sendMail(email, subject, content);
 
-  if (existEmailInForgotPassword) {
     res.json({
-      code: 'error',
-      message: 'Vui lòng gửi lại yêu cầu sau 5 phút'
+      code: 'success',
+      message: 'Đã gửi mã OTP qua email'
     });
-    return;
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      code: 'error',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
+    });
   }
-
-  // tao ma otp
-  const otp = generateHelper.generateRandomNumber(6);
-  // luu vao db: email va otp, sau 5p tu dong xoa
-  const newRecord = new ForgotPassword({
-    email: email,
-    otp: otp,
-    expireAt: 5 * 60 * 1000 + Date.now()
-  });
-  await newRecord.save();
-
-  // gui ma otp qua email cho ng dung
-  const subject = `Mã OTP lấy lại mật khẩu`;
-  const content = `Mã OTP của bạn là <b style="color: green;">${otp}</b>. Mã otp có hiệu lực trong 5 phút, vui lòng không cung cấp cho bất kì ai!`;
-  mailHelper.sendMail(email, subject, content);
-
-  res.json({
-    code: 'success',
-    message: 'Đã gửi mã otp qua email'
-  });
 };
 
 const otpPassword = (req, res) => {
@@ -176,45 +205,46 @@ const otpPassword = (req, res) => {
 };
 
 const otpPasswordPost = async (req, res) => {
-  const { otp, email } = req.body;
+  try {
+    const { otp, email } = req.body;
+    // Verify OTP & Get account info
+    const [existRecord, account] = await Promise.all([
+      ForgotPassword.findOne({ otp, email, expireAt: { $gt: Date.now() } }).lean(),
+      AccountAdmin.findOne({ email }).select('email')
+    ]);
 
-  // kiem tra co ton tai ban ghi trong ForgotPassword ko ?
-  const existRecord = await ForgotPassword.findOne({ otp: otp, email: email });
-
-  if (!existRecord) {
-    res.json({
-      code: 'error',
-      message: 'Mã OTP không chính xác!'
-    });
-    return;
-  }
-  // tim thong tin user trong AccountAdmin
-  const account = await AccountAdmin.findOne({
-    email: email
-  });
-
-  const token = jwt.sign(
-    {
-      id: account.id,
-      email: account.email
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: '1d'
+    if (!existRecord) {
+      return res.status(400).json({
+        code: 'error',
+        message: 'Mã OTP không chính xác hoặc đã hết hạn!'
+      });
     }
-  );
 
-  // Lưu token vào cookie
-  res.cookie('token', token, {
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    sameSite: 'strict'
-  });
+    if (!account) {
+      return res.status(404).json({
+        code: 'error',
+        message: 'Tài khoản không tồn tại!'
+      });
+    }
 
-  res.json({
-    code: 'success',
-    message: 'Xác thực OTP thành công!'
-  });
+    // Generate and set token
+    const token = generateToken(account);
+    setCookie(res, token);
+
+    // Remove used OTP
+    await ForgotPassword.deleteOne({ _id: existRecord._id });
+
+    res.json({
+      code: 'success',
+      message: 'Xác thực OTP thành công!'
+    });
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(500).json({
+      code: 'error',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
+    });
+  }
 };
 
 const resetPassword = (req, res) => {
@@ -224,27 +254,38 @@ const resetPassword = (req, res) => {
 };
 
 const resetPasswordPost = async (req, res) => {
-  const { password } = req.body;
+  try {
+    const { password } = req.body;
 
-  // Mã hóa mật khẩu với bcrypt
-  const salt = await bcrypt.genSalt(10); // Tạo ra chuỗi ngẫu nhiên có 10 ký tự
-  const hashedPassword = await bcrypt.hash(password, salt);
+    // Hash new password
+    const hashedPassword = await hashPassword(password);
 
-  await AccountAdmin.updateOne(
-    {
-      _id: req.account.id,
-      deleted: false,
-      status: 'active'
-    },
-    {
-      password: hashedPassword
-    }
-  );
+    // Update password 
+    const result = await AccountAdmin.updateOne(
+      {
+        _id: req.account.id,
+        deleted: false,
+        status: 'active'
+      },
+      {
+        $set: {
+          password: hashedPassword,
+          updatedAt: new Date()
+        }
+      }
+    );
 
-  res.json({
-    code: 'success',
-    message: 'Đổi mật khẩu thành công!'
-  });
+    res.json({
+      code: 'success',
+      message: 'Đổi mật khẩu thành công!'
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      code: 'error',
+      message: 'Đã có lỗi xảy ra, vui lòng thử lại!'
+    });
+  }
 };
 
 const logoutPost = async (req, res) => {

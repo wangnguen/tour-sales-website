@@ -33,4 +33,6 @@ router.post(
 
 router.post('/logout', authController.logoutPost);
 
+router.get('/verify', authController.verifyEmail);
+
 module.exports = router;

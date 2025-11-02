@@ -1,0 +1,48 @@
+extends ../layouts/default.pug
+
+block main
+  style.
+    .verify-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 80vh;
+      text-align: center;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    .verify-container h2 {
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+    .verify-container p {
+      color: #555;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    .verify-btn {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .verify-btn:hover {
+      background-color: #2980b9;
+    }
+
+  .verify-container
+    if success
+      h2(style="color: #27ae60") ✅ Xác nhận email thành công!
+      p Cảm ơn bạn đã xác nhận email. Tài khoản của bạn hiện đã được kích hoạt.
+    else
+      h2(style="color: #e74c3c") ❌ Link xác nhận không hợp lệ, đã hết hạn hoặc đã xác minh.
+      p Vui lòng kiểm tra lại email hoặc yêu cầu gửi lại đường dẫn mới.
+
+    a.verify-btn(href="/") ⬅️ Về trang chủ

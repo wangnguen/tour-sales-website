@@ -1178,21 +1178,113 @@ document.addEventListener('DOMContentLoaded', function () {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.code === 'error') {
-          alert(data.message);
-          validation.lockSubmitButton(); // Unlock nếu cần
-        } else if (data.code === 'success') {
-          alert('Cập nhật thành công!'); // Hoặc toast notification
-          window.location.reload();
+        if (data.code == 'error') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Cập nhật thông tin không thành công!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          });
         }
-      })
-      .catch((err) => {
-        console.error('Lỗi submit:', err);
-        alert('Có lỗi xảy ra, vui lòng thử lại!');
+
+        if (data.code == 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật thông tin thành công!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            window.location.href = `/user/profile`;
+          });
+        }
       });
   });
 });
 // End Profile Edit Form
+
+// Profile Change Password
+document.addEventListener('DOMContentLoaded', function () {
+  const changePasswordForm = document.querySelector('#profile-change-password-form');
+  if (!changePasswordForm) return;
+
+  // Khởi tạo validation
+  const validation = new JustValidate('#profile-change-password-form', {
+    errorLabelCssClass: 'error-label',
+    errorFieldCssClass: 'error-field',
+    successLabelCssClass: 'success-label',
+    successFieldCssClass: 'success-field'
+  });
+
+  validation
+    .addField('#password', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập mật khẩu mới!'
+      },
+      {
+        rule: 'minLength',
+        value: 6,
+        errorMessage: 'Mật khẩu phải có ít nhất 6 ký tự!'
+      },
+      {
+        rule: 'maxLength',
+        value: 50,
+        errorMessage: 'Mật khẩu không được vượt quá 50 ký tự!'
+      }
+    ])
+    .addField('#confirmPassword', [
+      {
+        rule: 'required',
+        errorMessage: 'Vui lòng nhập lại mật khẩu mới!'
+      },
+      {
+        validator: (value, fields) => {
+          const password = document.querySelector('#password').value;
+          return value === password;
+        },
+        errorMessage: 'Mật khẩu nhập lại không khớp!'
+      }
+    ]);
+
+  validation.onSuccess((event) => {
+    event.preventDefault();
+
+    const password = event.target.password.value.trim();
+
+    // Gửi yêu cầu PATCH
+    fetch('/user/profile/change-password', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.code === 'error') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Đổi mật khẩu không thành công!',
+            text: data.message,
+            confirmButtonText: 'OK'
+          });
+        }
+
+        if (data.code === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Đổi mật khẩu thành công!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            window.location.href = '/user/profile';
+          });
+        }
+      });
+  });
+});
+
+// End Profile Change Password
 
 // Form conntact
 document.addEventListener('DOMContentLoaded', function () {

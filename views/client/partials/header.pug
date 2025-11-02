@@ -37,7 +37,7 @@ header.header
         ul
           li
             a.active(href="/") Trang chủ
-          each item in categoryList 
+          each item in categoryList
             li
               a(href=`/category/${item.slug}`) #{item.name}
               if(item.children)
@@ -66,7 +66,7 @@ header.header
               li
                 a(href="/user/profile") Xem thông tin
               li
-                a(href="/user/edit") Chỉnh sửa
+                a(href="/user/profile/edit") Chỉnh sửa
               li
                 a(href="javascript:;" class="inner-logout") Đăng xuất
           else
@@ -75,7 +75,6 @@ header.header
                 alt="User"
                 src="/assets/images/icon-user.svg"
               )
-              span.username Đăng nhập/Đăng ký
 
         // Cart
         .inner-cart

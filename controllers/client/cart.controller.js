@@ -4,7 +4,8 @@ const moment = require('moment');
 
 const cart = (req, res) => {
   res.render('client/pages/cart', {
-    titlePage: 'Giỏ hàng'
+    titlePage: 'Giỏ hàng',
+    account: req.account
   });
 };
 

@@ -1408,3 +1408,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 // End form contact
+
+// Cart Login
+document.addEventListener('DOMContentLoaded', () => {
+  const cartLink = document.getElementById('cart-link');
+
+  if (cartLink && cartLink.getAttribute('href') === '#') {
+    cartLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'info',
+        title: 'Vui lòng đăng nhập để xem giỏ hàng!',
+        text: 'Tính năng giỏ hàng chỉ dành cho người dùng đã đăng nhập.',
+        showCancelButton: true,
+        confirmButtonText: 'Đăng nhập',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = '/auth/login';
+        }
+      });
+    });
+  }
+});
+// End Cart Login

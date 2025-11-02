@@ -78,11 +78,19 @@ header.header
 
         // Cart
         .inner-cart
-          a(href="/cart")
-            img(
-              alt="Cart"
-              src="/assets/images/icon-cart.svg"
-            )
-            span(mini-cart) 0
+          if account
+            a(href="/cart" id='cart-link')
+              img(
+                alt="Cart"
+                src="/assets/images/icon-cart.svg"
+              )
+              span(mini-cart) 0
+          else
+            a(href="#" id='cart-link')
+              img(
+                alt="Cart"
+                src="/assets/images/icon-cart.svg"
+              )
+              span 0
       // End Actions
 // End Header

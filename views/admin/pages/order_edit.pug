@@ -5,21 +5,21 @@ block main
 
   .section-8
     form#order-edit-form
-      .inner-group(style="display:none;")
+      .inner-group(style="display:none;" )
         label(class="inner-label" for="id") Id
-        input(type="text" id="id" name="id" value=orderDetail.id)
+        input(type="text" id="id" name="id" value=orderDetail.id readonly)
       .inner-group
         label(class="inner-label" for="fullName") Tên khách hàng
-        input(type="text" id="fullName" name="fullName" value=orderDetail.fullName)
+        input(type="text" id="fullName" name="fullName" value=orderDetail.fullName readonly)
       .inner-group
         label(class="inner-label" for="phone") Số điện thoại
-        input(type="text" id="phone" name="phone" value=orderDetail.phone)
+        input(type="text" id="phone" name="phone" value=orderDetail.phone readonly)
       .inner-group.inner-two-col
         label(class="inner-label" for="note") Ghi chú
-        textarea(id="note" name="note") #{orderDetail.note}
+        textarea(id="note" name="note" disabled) #{orderDetail.note}
       .inner-group
         label(class="inner-label" for="paymentMethod") Phương thức thanh toán
-        select(id="paymentMethod" name="paymentMethod")
+        select(id="paymentMethod" name="paymentMethod" disabled)
           each item in paymentMethod
             option(
               value=item.value

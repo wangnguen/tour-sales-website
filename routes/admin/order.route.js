@@ -10,4 +10,6 @@ router.get('/edit/:id', orderController.edit);
 
 router.patch('/edit/:id', orderValidate.editPatch, orderController.editPatch);
 
+router.patch('/delete/:id', orderController.deletePatch);
+
 module.exports = router;

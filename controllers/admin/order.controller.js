@@ -56,29 +56,23 @@ const list = async (req, res) => {
 
   // Phân trang
   const limitItems = 5;
-  let page = 1;
-  if (req.query.page) {
-    const currentPage = parseInt(req.query.page);
-    if (currentPage > 0) {
-      page = currentPage;
-    }
-  }
   const totalRecord = await Order.countDocuments(find);
   const totalPage = Math.max(Math.ceil(totalRecord / limitItems), 1);
-  if (page > totalPage) {
-    page = totalPage;
-  }
+
+  const page = Math.min(Math.max(parseInt(req.query.page) || 1, 1), totalPage);
+
   const skip = (page - 1) * limitItems;
-  const pagination = {
-    skip: skip,
-    totalRecord: totalRecord,
-    totalPage: totalPage
-  };
+
+  const pagination = { skip, totalRecord, totalPage };
+
   // Hết Phân trang
 
-  const orderList = await Order.find(find).sort({
-    createdAt: 'desc'
-  });
+  const orderList = await Order.find(find)
+    .sort({
+      createdAt: 'desc'
+    })
+    .skip(pagination.skip)
+    .limit(limitItems);
 
   for (const orderDetail of orderList) {
     orderDetail.paymentMethodName = variableConfig.paymentMethod.find(
@@ -172,8 +166,41 @@ const editPatch = async (req, res) => {
   }
 };
 
+const deletePatch = async (req, res) => {
+  if (!req.permissions.includes('order-delete')) {
+    res.status(403).json({
+      code: 'error',
+      message: 'Không có quyến sử dụng tính năng này !'
+    });
+    return;
+  }
+  try {
+    const id = req.params.id;
+    await Order.updateOne(
+      {
+        _id: id
+      },
+      {
+        deleted: true,
+        deletedBy: req.account.id,
+        deletedAt: Date.now()
+      }
+    );
+    req.flash('success', 'Xoá danh mục thành công !');
+    res.json({
+      code: 'success'
+    });
+  } catch (error) {
+    res.json({
+      code: 'error',
+      message: 'Id không hợp lệ !'
+    });
+  }
+};
+
 module.exports = {
   list,
   edit,
-  editPatch
+  editPatch,
+  deletePatch
 };

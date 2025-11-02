@@ -2,7 +2,9 @@ extends ../layouts/default.pug
 include ../mixins/paginations.pug
 
 block main
-  h1.box-title Quản lý đơn hàng
+  if(permissions.includes("category-view"))
+      h1.box-title Quản lý đơn hàng
+
 
   //- Section 4
   .section-4
@@ -98,11 +100,17 @@ block main
                 div #{orderDetail.createdAtDate}
               td
                 .inner-buttons
-                  a(
-                    class="inner-edit"
-                    href=`/${pathAdmin}/order/edit/${orderDetail.id}`
-                  ) <i class="fa-regular fa-pen-to-square"></i>
-                  button(class="inner-delete") <i class="fa-regular fa-trash-can"></i>
+                  if(permissions.includes("order-edit"))
+                    a(
+                      class="inner-edit"
+                      href=`/${pathAdmin}/order/edit/${orderDetail.id}`
+                    ) <i class="fa-regular fa-pen-to-square"></i>
+                  if(permissions.includes("order-delete"))
+                    button(
+                      class="inner-delete"
+                      button-delete
+                      data-api=`/${pathAdmin}/order/delete/${orderDetail.id}`
+                    ) <i class="fa-regular fa-trash-can"></i>
   //- End Section 6
 
   //- Section 7

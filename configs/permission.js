@@ -154,5 +154,13 @@ module.exports.permissionList = [
   {
     label: 'Thùng rác bài viết',
     value: 'news-trash'
+  },
+  {
+    label: 'Xem danh sách người dùng',
+    value: 'user-view'
+  },
+  {
+    label: 'Xoá người dùng',
+    value: 'user-delete'
   }
 ];

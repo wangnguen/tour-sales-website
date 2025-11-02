@@ -8,7 +8,7 @@ const schema = new mongoose.Schema(
     status: String,
     password: String,
     avatar: String,
-    adddress: String,
+    address: String,
     createdBy: String,
     updatedBy: String,
     deleted: {

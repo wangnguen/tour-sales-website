@@ -1,0 +1,16 @@
+services:
+  server:
+    build: .
+    container_name: node_tour
+    restart: "no"
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+    # Mount code
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: yarn start

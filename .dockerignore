@@ -1,0 +1,30 @@
+# Node modules (được cài trong container)
+node_modules
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# Git và các file không cần thiết
+.git
+.gitignore
+
+# Cache / Logs / Editor
+.DS_Store
+*.tmp
+.vscode
+.idea
+
+# Test và coverage
+tests
+coverage
+dist
+build
+tmp
+.cache
+
+# Env file
+.env
+
+# Bỏ file cấu hình cục bộ
+.prettierrc
+.prettierignore

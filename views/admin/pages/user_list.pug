@@ -33,6 +33,9 @@ block main
         .inner-item
           select
             option(value="") -- Hành động --
+            if(permissions.includes("user-edit"))
+                option(value="active") Hoạt động
+                option(value="inactive") Tạm dừng
             if(permissions.includes("user-delete"))
                 option(value="delete") Xóa
         .inner-item

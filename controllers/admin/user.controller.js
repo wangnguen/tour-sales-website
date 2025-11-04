@@ -127,6 +127,15 @@ const changeMultiPatch = async (req, res) => {
     let permission;
 
     switch (option) {
+      case 'active':
+      case 'inactive':
+        permission = 'user-edit';
+        updateData = {
+          status: option,
+          updatedBy: req.account.id,
+          updatedAt: new Date()
+        };
+        break;
       case 'delete':
         permission = 'user-delete';
         updateData = {
@@ -150,6 +159,12 @@ const changeMultiPatch = async (req, res) => {
       });
     }
 
+    const message = {
+      active: 'Kích hoạt người dùng thành công!',
+      inactive: 'Vô hiệu hóa người dùng thành công!',
+      delete: 'Xóa người dùng thành công!'
+    };
+
     const result = await User.updateMany({ _id: { $in: ids } }, updateData);
 
     if (result.matchedCount === 0) {
@@ -159,7 +174,7 @@ const changeMultiPatch = async (req, res) => {
       });
     }
 
-    req.flash('success', 'Xóa người dùng thành công!');
+    req.flash('success', message[option]);
     res.json({ code: 'success' });
   } catch (error) {
     console.error('User change multi error:', error);

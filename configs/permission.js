@@ -160,6 +160,10 @@ module.exports.permissionList = [
     value: 'user-view'
   },
   {
+    label: 'Chỉnh sửa người dùng',
+    value: 'user-edit'
+  },
+  {
     label: 'Xoá người dùng',
     value: 'user-delete'
   }
